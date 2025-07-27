@@ -35,16 +35,22 @@ def check_pyrcc6():
         return False
 
 def compile_resources():
-    """Compile resources.qrc to rc_resources.py"""
+    """Compile resources.qrc to src/resources_rc.py"""
     
     project_root = get_project_root()
     resources_qrc = os.path.join(project_root, 'resources.qrc')
-    output_file = os.path.join(project_root, 'rc_resources.py')
+    output_file = os.path.join(project_root, 'src', 'resources_rc.py')
     
     # Check if resources.qrc exists
     if not os.path.exists(resources_qrc):
         print(f"Error: resources.qrc not found at {resources_qrc}")
         return False
+    
+    # Ensure src directory exists
+    src_dir = os.path.join(project_root, 'src')
+    if not os.path.exists(src_dir):
+        os.makedirs(src_dir)
+        print(f"📁 Created src directory: {src_dir}")
     
     print(f"📁 Project root: {project_root}")
     print(f"📄 Input file: {resources_qrc}")
@@ -97,25 +103,26 @@ def compile_resources():
     return False
 
 def verify_compiled_file():
-    """Verify that rc_resources.py was created and is valid"""
+    """Verify that src/resources_rc.py was created and is valid"""
     project_root = get_project_root()
-    rc_resources_path = os.path.join(project_root, 'rc_resources.py')
+    resources_rc_path = os.path.join(project_root, 'src', 'resources_rc.py')
     
-    if not os.path.exists(rc_resources_path):
-        print(f"❌ rc_resources.py was not created at {rc_resources_path}")
+    if not os.path.exists(resources_rc_path):
+        print(f"❌ src/resources_rc.py was not created at {resources_rc_path}")
         return False
     
     try:
-        # Add project root to Python path
-        if project_root not in sys.path:
-            sys.path.insert(0, project_root)
+        # Add src directory to Python path
+        src_dir = os.path.join(project_root, 'src')
+        if src_dir not in sys.path:
+            sys.path.insert(0, src_dir)
         
         # Try to import the compiled module
-        import rc_resources
-        print("✅ rc_resources.py is valid and can be imported")
+        import resources_rc
+        print("✅ src/resources_rc.py is valid and can be imported")
         return True
     except Exception as e:
-        print(f"❌ Error importing rc_resources.py: {e}")
+        print(f"❌ Error importing src/resources_rc.py: {e}")
         return False
 
 def main():
@@ -130,7 +137,7 @@ def main():
             print("\n🎉 Resources compiled successfully!")
             print("You can now use resources in your application.")
             print("\nExample usage:")
-            print("  import rc_resources")
+            print("  from src import resources_rc")
             print("  # Then use QFile(':/style.qss') to access resources")
         else:
             print("\n⚠️  Resources compiled but verification failed!")
