@@ -17,6 +17,7 @@ from src.widgets.mainwindow.ui_form import Ui_Main
 
 from src.core.button_manager import ButtonManager
 from src.actions.button_actions import ButtonActions
+from src.utils.css_manager import CSSManager, WidgetStateManager
 
 
 # Important:
@@ -32,6 +33,10 @@ class MainWindow(QWidget):
 
         # Add image_path attribute to the existing QLabel
         self.ui.lbImageArea.image_path = None
+
+        # Initialize state managers
+        self.image_area_state = WidgetStateManager(self.ui.lbImageArea)
+        self.text_editor_state = WidgetStateManager(self.ui.txtEdit)
 
         # Add drag & drop event handlers to the existing QLabel
         self.ui.lbImageArea.dragEnterEvent = self._drag_enter_event
@@ -56,19 +61,17 @@ class MainWindow(QWidget):
         """Handle drag enter event"""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
-            self.ui.lbImageArea.setStyleSheet(
-                "border: 2px dashed #4CAF50; background-color: rgba(76, 175, 80, 0.1);"
-            )
+            self.image_area_state.set_drag_over_state(True)
         else:
             event.ignore()
 
     def _drag_leave_event(self, event):
         """Handle drag leave event"""
-        self.ui.lbImageArea.setStyleSheet("")
+        self.image_area_state.set_drag_over_state(False)
 
     def _drop_event(self, event):
         """Handle drop event"""
-        self.ui.lbImageArea.setStyleSheet("")
+        self.image_area_state.set_drag_over_state(False)
 
         if event.mimeData().hasUrls():
             urls = event.mimeData().urls()
@@ -79,6 +82,7 @@ class MainWindow(QWidget):
                     event.acceptProposedAction()
                 else:
                     print(f"Invalid image file: {file_path}")
+                    self.image_area_state.set_error_state(True)
         else:
             event.ignore()
 
@@ -107,6 +111,9 @@ class MainWindow(QWidget):
     def _load_image(self, image_path):
         """Load and display an image"""
         try:
+            # Set loading state
+            self.image_area_state.set_loading_state(True)
+            
             pixmap = QPixmap(image_path)
             if not pixmap.isNull():
                 # Scale pixmap to fit the label while maintaining aspect ratio
@@ -117,11 +124,24 @@ class MainWindow(QWidget):
                 )
                 self.ui.lbImageArea.setPixmap(scaled_pixmap)
                 self.ui.lbImageArea.image_path = image_path
+                
+                # Set success state briefly
+                self.image_area_state.set_loading_state(False)
+                self.image_area_state.set_success_state(True)
+                
                 print(f"Image loaded successfully: {image_path}")
+                
+                # Clear success state after 2 seconds
+                from PySide6.QtCore import QTimer
+                QTimer.singleShot(2000, lambda: self.image_area_state.set_success_state(False))
             else:
                 print(f"Failed to load image: {image_path}")
+                self.image_area_state.set_loading_state(False)
+                self.image_area_state.set_error_state(True)
         except Exception as e:
             print(f"Error loading image: {e}")
+            self.image_area_state.set_loading_state(False)
+            self.image_area_state.set_error_state(True)
 
     def _clear_image_impl(self):
         """Clear the image and reset to default state"""
@@ -138,7 +158,9 @@ class MainWindow(QWidget):
             )
         )
         self.ui.lbImageArea.image_path = None
-        self.ui.lbImageArea.setStyleSheet("")  # Reset any custom styling
+        
+        # Reset all states
+        self.image_area_state.reset_to_default()
 
     def _gather_buttons(self):
         """Gather all buttons from UI"""
@@ -175,6 +197,32 @@ class MainWindow(QWidget):
         """Thread-safe method to set text in the editor"""
         self.ui.txtEdit.setPlainText(text)
 
+    def set_editor_processing(self, processing=True):
+        """Set processing state for text editor"""
+        self.text_editor_state.set_processing_state(processing)
+
+    def set_editor_readonly(self, readonly=True):
+        """Set readonly state for text editor"""
+        self.text_editor_state.set_readonly_state(readonly)
+
+    def set_button_processing(self, button, processing=True):
+        """Set processing state for a specific button"""
+        CSSManager.set_property(button, "processing", processing)
+
+    def set_status_message(self, message, status_type="info"):
+        """Set status message with appropriate styling"""
+        # You can add a status label to your UI and use this method
+        # For now, we'll just print the message
+        print(f"[{status_type.upper()}] {message}")
+
+    def get_image_area_state(self):
+        """Get current state of image area"""
+        return self.image_area_state.get_current_state()
+
+    def get_text_editor_state(self):
+        """Get current state of text editor"""
+        return self.text_editor_state.get_current_state()
+
     def _clear_image_safe(self):
         """Thread-safe method to clear the image"""
         if hasattr(self.ui.lbImageArea, "clear_image"):
@@ -194,6 +242,9 @@ class MainWindow(QWidget):
                 )
             )
             self.ui.lbImageArea.image_path = None
+            
+            # Reset CSS properties
+            self.image_area_state.reset_to_default()
 
     def _load_image_to_area(self, image_path):
         """Thread-safe method to load image to the image area"""
@@ -205,6 +256,9 @@ class MainWindow(QWidget):
                 from PySide6.QtGui import QPixmap
                 from PySide6.QtCore import Qt
 
+                # Set loading state
+                self.image_area_state.set_loading_state(True)
+                
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
                     # Scale pixmap to fit the label while maintaining aspect ratio
@@ -215,11 +269,24 @@ class MainWindow(QWidget):
                     )
                     self.ui.lbImageArea.setPixmap(scaled_pixmap)
                     self.ui.lbImageArea.image_path = image_path
+                    
+                    # Set success state briefly
+                    self.image_area_state.set_loading_state(False)
+                    self.image_area_state.set_success_state(True)
+                    
                     print(f"Image loaded successfully: {image_path}")
+                    
+                    # Clear success state after 2 seconds
+                    from PySide6.QtCore import QTimer
+                    QTimer.singleShot(2000, lambda: self.image_area_state.set_success_state(False))
                 else:
                     print(f"Failed to load image: {image_path}")
+                    self.image_area_state.set_loading_state(False)
+                    self.image_area_state.set_error_state(True)
             except Exception as e:
                 print(f"Error loading image: {e}")
+                self.image_area_state.set_loading_state(False)
+                self.image_area_state.set_error_state(True)
 
     def _show_upload_menu(self):
         """Show upload menu on main thread"""
