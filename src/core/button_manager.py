@@ -5,11 +5,11 @@ Button management utilities for enabling/disabling buttons
 
 class ButtonManager:
     """Manages button states and connections"""
-    
+
     def __init__(self, buttons):
         self.buttons = buttons
         self.action_thread = None
-    
+
     def disable_other_buttons(self, active_button):
         """Disable all buttons except the active one"""
         for button in self.buttons:
@@ -31,4 +31,4 @@ class ButtonManager:
 
     def on_action_finished(self):
         """Callback when action is finished"""
-        self.enable_all_buttons() 
+        self.enable_all_buttons()

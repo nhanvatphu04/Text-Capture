@@ -1,6 +1,7 @@
 """
 Main entry point for the TextCapture application
 """
+
 import sys
 import os
 
@@ -22,25 +23,25 @@ from src.ui.main_window import MainWindow
 def run_app():
     """Main function to run the application"""
     app = QApplication(sys.argv)
-    
+
     # Initialize ResourceLoader
     resource_loader = ResourceLoader()
-    
+
     # Load JetBrains Mono fonts
     print("Loading JetBrains Mono fonts...")
     loaded_fonts = resource_loader.load_fonts()
-    
+
     # Apply stylesheet
     stylesheet = resource_loader.load_stylesheet()
     if stylesheet:
         app.setStyleSheet(stylesheet)
-    
+
     # Create and show main window
     widget = MainWindow()
     widget.show()
-    
+
     return app.exec()
 
 
 if __name__ == "__main__":
-    sys.exit(run_app()) 
+    sys.exit(run_app())

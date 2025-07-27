@@ -692,6 +692,21 @@ QTextEdit[class="terminal"], QPlainTextEdit[class="terminal"] {
     padding: 6px;
 }
 
+/* Image Label (Drag & Drop Area) */
+QLabel#lbImageArea {
+    background-color: #1e1e1e;
+    border: 2px dashed #555555;
+    border-radius: 8px;
+    color: #888888;
+    font-size: 10pt;
+    padding: 10px;
+}
+
+QLabel#lbImageArea:hover {
+    border: 2px dashed #0078d4;
+    background-color: rgba(0, 120, 212, 0.05);
+}
+
 /* Splitter */
 QSplitter::handle {
     background-color: #555555;

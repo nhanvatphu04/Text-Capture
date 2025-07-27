@@ -3,4 +3,4 @@
 
 from .ui_form import Ui_Main
 
-__all__ = ['Ui_Main'] 
+__all__ = ["Ui_Main"]
