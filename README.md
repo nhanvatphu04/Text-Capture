@@ -28,6 +28,7 @@ A modern desktop application for extracting text from images using OCR (Optical 
 - **Button States**: Visual feedback during processing operations
 - **Error Handling**: Graceful handling of invalid files and processing errors
 - **Thread-Safe Operations**: Non-blocking UI during image processing
+- **C++ Performance**: Optional C++ implementation for 2-5x faster processing
 
 ## Screenshots
 
@@ -42,6 +43,17 @@ A modern desktop application for extracting text from images using OCR (Optical 
    - **Windows**: Download from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki)
    - **macOS**: `brew install tesseract`
    - **Linux**: `sudo apt-get install tesseract-ocr`
+
+### Optional: C++ Dependencies (for high performance)
+
+For 2-5x faster processing, you can build the C++ module:
+
+1. **C++ Compiler**: Visual Studio (Windows), GCC/Clang (Linux/macOS)
+2. **CMake**: Build system
+3. **OpenCV**: Computer vision library
+4. **Tesseract**: OCR engine (C++ version)
+
+See [OCR Module README](src/ocr/README.md) for detailed installation instructions.
 
 ### Setup
 
@@ -70,6 +82,11 @@ A modern desktop application for extracting text from images using OCR (Optical 
 4. **Compile resources** (if needed):
    ```bash
    python src/utils/compile_resources.py
+   ```
+
+5. **Build C++ module** (optional, for high performance):
+   ```bash
+   python build_cpp.py
    ```
 
 ## Usage
@@ -174,9 +191,13 @@ TextCapture/
 - **EasyOCR**: OCR engine for text recognition
 - **pytesseract**: Python wrapper for Tesseract OCR
 - **python-docx**: Microsoft Word document support
+- **OpenCV**: Computer vision library
+- **pybind11**: C++ Python bindings
 
 ### System Dependencies
 - **Tesseract OCR**: OCR engine (must be installed separately)
+- **OpenCV**: Computer vision library (for C++ implementation)
+- **C++ Compiler**: For building high-performance module
 
 ## Contributing
 
@@ -207,6 +228,9 @@ If you encounter any issues or have questions:
 
 ## Roadmap
 
+- [x] C++ implementation for high performance
+- [x] Advanced image preprocessing
+- [x] Multi-language OCR support
 - [ ] Camera capture functionality
 - [ ] Batch processing for multiple images
 - [ ] Export to different formats (PDF, DOCX, TXT)

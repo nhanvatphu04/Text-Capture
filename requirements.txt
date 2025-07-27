@@ -1,5 +1,10 @@
-pillow
-PySide6
+# TextCapture Python Dependencies
+opencv-python
 pytesseract
+easyocr
+pillow
+numpy
+pyperclip
+PySide6
 EasyOCR
-python-docx
+pybind11

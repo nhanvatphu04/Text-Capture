@@ -15,8 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QPushButton,
-    QSizePolicy, QTextEdit, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QLabel,
+    QPushButton, QSizePolicy, QTextEdit, QWidget)
 import resources_rc
 
 class Ui_Main(object):
@@ -47,16 +47,13 @@ class Ui_Main(object):
         self.lbImageArea.setWordWrap(True)
         self.lbImageArea.setIndent(-1)
         self.lbImageArea.setOpenExternalLinks(False)
-        self.btnCapture = QPushButton(Main)
-        self.btnCapture.setObjectName(u"btnCapture")
-        self.btnCapture.setGeometry(QRect(30, 350, 90, 24))
         self.lbImageOption = QLabel(Main)
         self.lbImageOption.setObjectName(u"lbImageOption")
-        self.lbImageOption.setGeometry(QRect(100, 320, 60, 24))
+        self.lbImageOption.setGeometry(QRect(100, 250, 60, 24))
         self.lbImageOption.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.btnUpload = QPushButton(Main)
         self.btnUpload.setObjectName(u"btnUpload")
-        self.btnUpload.setGeometry(QRect(140, 350, 90, 24))
+        self.btnUpload.setGeometry(QRect(30, 275, 200, 24))
         self.txtEdit = QTextEdit(Main)
         self.txtEdit.setObjectName(u"txtEdit")
         self.txtEdit.setGeometry(QRect(260, 50, 310, 270))
@@ -80,10 +77,10 @@ class Ui_Main(object):
         self.btnUpperCase.setIcon(icon3)
         self.btnRefresh = QPushButton(Main)
         self.btnRefresh.setObjectName(u"btnRefresh")
-        self.btnRefresh.setGeometry(QRect(30, 280, 90, 24))
+        self.btnRefresh.setGeometry(QRect(30, 310, 90, 24))
         self.btnGetText = QPushButton(Main)
         self.btnGetText.setObjectName(u"btnGetText")
-        self.btnGetText.setGeometry(QRect(140, 280, 90, 24))
+        self.btnGetText.setGeometry(QRect(140, 310, 90, 24))
         self.btnUnderline = QPushButton(Main)
         self.btnUnderline.setObjectName(u"btnUnderline")
         self.btnUnderline.setGeometry(QRect(450, 350, 50, 24))
@@ -97,6 +94,14 @@ class Ui_Main(object):
         icon5.addFile(u":/src/resources/images/strikethrough.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btnStrikethrough.setIcon(icon5)
         self.btnStrikethrough.setIconSize(QSize(24, 24))
+        self.lbLanguage = QLabel(Main)
+        self.lbLanguage.setObjectName(u"lbLanguage")
+        self.lbLanguage.setGeometry(QRect(30, 350, 120, 24))
+        self.lbLanguage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.cbLanguage = QComboBox(Main)
+        self.cbLanguage.setObjectName(u"cbLanguage")
+        self.cbLanguage.setGeometry(QRect(150, 345, 80, 24))
+        self.cbLanguage.setMinimumSize(QSize(80, 24))
 
         self.retranslateUi(Main)
 
@@ -111,10 +116,6 @@ class Ui_Main(object):
 "<br/>\n"
 "<span style=\"font-size: 12pt;\">K\u00e9o v\u00e0 th\u1ea3 \u1ea3nh v\u00e0o \u0111\u00e2y</span>\n"
 "</div>", None))
-#if QT_CONFIG(tooltip)
-        self.btnCapture.setToolTip(QCoreApplication.translate("Main", u"Ch\u1ee5p \u1ea3nh t\u1eeb m\u00e0n h\u00ecnh", None))
-#endif // QT_CONFIG(tooltip)
-        self.btnCapture.setText(QCoreApplication.translate("Main", u"Ch\u1ee5p \u1ea3nh", None))
         self.lbImageOption.setText(QCoreApplication.translate("Main", u"ho\u1eb7c", None))
 #if QT_CONFIG(tooltip)
         self.btnUpload.setToolTip(QCoreApplication.translate("Main", u"T\u1ea3i \u1ea3nh t\u1eeb thi\u1ebft b\u1ecb", None))
@@ -148,5 +149,10 @@ class Ui_Main(object):
         self.btnStrikethrough.setToolTip(QCoreApplication.translate("Main", u"G\u1ea1ch ngang", None))
 #endif // QT_CONFIG(tooltip)
         self.btnStrikethrough.setText("")
+        self.lbLanguage.setText(QCoreApplication.translate("Main", u"Ch\u1ecdn ng\u00f4n ng\u1eef", None))
+#if QT_CONFIG(tooltip)
+        self.cbLanguage.setToolTip(QCoreApplication.translate("Main", u"Ch\u1ecdn ng\u00f4n ng\u1eef", None))
+#endif // QT_CONFIG(tooltip)
+        self.cbLanguage.setCurrentText("")
     # retranslateUi
 

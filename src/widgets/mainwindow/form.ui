@@ -95,27 +95,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnCapture">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>350</y>
-     <width>90</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>Chụp ảnh từ màn hình</string>
-   </property>
-   <property name="text">
-    <string>Chụp ảnh</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="lbImageOption">
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>320</y>
+     <y>250</y>
      <width>60</width>
      <height>24</height>
     </rect>
@@ -130,9 +114,9 @@
   <widget class="QPushButton" name="btnUpload">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>350</y>
-     <width>90</width>
+     <x>30</x>
+     <y>275</y>
+     <width>200</width>
      <height>24</height>
     </rect>
    </property>
@@ -217,7 +201,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>280</y>
+     <y>310</y>
      <width>90</width>
      <height>24</height>
     </rect>
@@ -233,7 +217,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>280</y>
+     <y>310</y>
      <width>90</width>
      <height>24</height>
     </rect>
@@ -289,6 +273,44 @@
      <width>24</width>
      <height>24</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbLanguage">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>350</y>
+     <width>120</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Chọn ngôn ngữ</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cbLanguage">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>345</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>24</height>
+    </size>
+   </property>
+   <property name="toolTip">
+    <string>Chọn ngôn ngữ</string>
+   </property>
+   <property name="currentText">
+    <string/>
    </property>
   </widget>
  </widget>

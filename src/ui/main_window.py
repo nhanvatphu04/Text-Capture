@@ -54,6 +54,10 @@ class MainWindow(QWidget):
         self.button_actions = ButtonActions(self)
         self.action_thread = None
 
+        # Initialize language combo box
+        self.ui.cbLanguage.addItems(["En", "Vi", "Jp"])
+        self.ui.cbLanguage.setCurrentIndex(0)
+
         # Setup connections
         self._setup_button_connections()
 
@@ -167,7 +171,7 @@ class MainWindow(QWidget):
         buttons = [
             self.ui.btnRefresh,
             self.ui.btnGetText,
-            self.ui.btnCapture,
+            self.ui.cbLanguage,
             self.ui.btnUpload,
             self.ui.btnSentenceCase,
             self.ui.btnLowerCase,
@@ -181,7 +185,7 @@ class MainWindow(QWidget):
         """Set up connections for all buttons"""
         self.ui.btnRefresh.clicked.connect(self.button_actions.on_refresh_clicked)
         self.ui.btnGetText.clicked.connect(self.button_actions.on_get_text_clicked)
-        self.ui.btnCapture.clicked.connect(self.button_actions.on_capture_clicked)
+        self.ui.cbLanguage.currentTextChanged.connect(self.button_actions.on_language_changed)
         self.ui.btnUpload.clicked.connect(self.button_actions.on_upload_clicked)
         self.ui.btnSentenceCase.clicked.connect(
             self.button_actions.on_sentence_case_clicked

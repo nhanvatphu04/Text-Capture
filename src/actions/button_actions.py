@@ -244,20 +244,34 @@ class ButtonActions:
 
         # Get current image path
         image_path = self._get_current_image_path()
-        if image_path:
-            # TODO: Add actual OCR logic here using image_path
-            sample_text = f"Đây là văn bản mẫu được lấy từ ảnh: {image_path}. Văn bản này sẽ được xử lý và định dạng."
-        else:
+        if not image_path:
             print("No image selected")
-            sample_text = "Vui lòng chọn ảnh trước khi thực hiện OCR"
+            self._set_text_to_editor_safe("Vui lòng chọn ảnh trước khi thực hiện OCR")
+            return
 
-        # Use thread-safe method to update UI
-        self._set_text_to_editor_safe(sample_text)
+        try:
+            # Import OCR engine
+            from src.ocr import OCREngine
+            
+            # Initialize OCR engine (will automatically choose C++ or Python)
+            ocr_engine = OCREngine(use_cpp=True, language='vie')
+            
+            # Extract text from image
+            extracted_text = ocr_engine.extract_text(image_path)
+            
+            if extracted_text.strip():
+                self._set_text_to_editor_safe(extracted_text)
+            else:
+                self._set_text_to_editor_safe("Không thể nhận dạng văn bản từ ảnh này. Vui lòng thử ảnh khác.")
+                
+        except Exception as e:
+            print(f"OCR error: {e}")
+            self._set_text_to_editor_safe(f"Lỗi khi xử lý OCR: {str(e)}")
 
     @async_action
-    def on_capture_clicked(self):
-        """Action for Capture button"""
-        time.sleep(1)
+    def on_language_changed(self, text=None):
+        """Action for Language button"""
+        print(f"Language changed to: {text}")
 
     @async_action
     def on_upload_clicked(self):
