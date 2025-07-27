@@ -6,6 +6,7 @@ import time
 import re
 from src.core.async_utils import async_action, safe_ui_update
 from PySide6.QtGui import QTextCharFormat, QFont
+from PySide6.QtCore import QCoreApplication
 
 
 class ButtonActions:
@@ -202,7 +203,6 @@ class ButtonActions:
     @async_action
     def on_refresh_clicked(self):
         """Action for Refresh button"""
-        print("Refreshing...")
         # Clear txtEdit content - use thread-safe method
         self._set_text_to_editor_safe("")
 
@@ -213,11 +213,10 @@ class ButtonActions:
         for format_type in self.format_states:
             self.format_states[format_type] = False
             self._update_button_appearance(format_type)
-        print("Refresh completed")
 
     def _clear_image_safe(self):
         """Thread-safe method to clear the image"""
-        safe_ui_update(self.main_window, "_clear_image")
+        safe_ui_update(self.main_window, "_clear_image_safe")
 
     def _clear_image(self):
         """Clear the image in lbImageArea"""
@@ -225,22 +224,27 @@ class ButtonActions:
             # Clear the image directly
             self.main_window.ui.lbImageArea.clear()
             self.main_window.ui.lbImageArea.setText(
-                "Kéo thả ảnh vào đây<br>hoặc click để chọn file"
+                QCoreApplication.translate(
+                    "Main",
+                    '<div style="text-align: center;">\n'
+                    '<img src=":/src/resources/images/add_image.png"/>\n'
+                    "<br/>\n"
+                    '<span style="font-size: 12pt;">K\u00e9o v\u00e0 th\u1ea3 \u1ea3nh v\u00e0o \u0111\u00e2y</span>\n'
+                    "</div>",
+                    None,
+                )
             )
             self.main_window.ui.lbImageArea.image_path = None
-            print("Image cleared successfully")
         except Exception as e:
             print(f"Error clearing image: {e}")
 
     @async_action
     def on_get_text_clicked(self):
         """Action for Get Text button"""
-        print("Getting text...")
 
         # Get current image path
         image_path = self._get_current_image_path()
         if image_path:
-            print(f"Processing image: {image_path}")
             # TODO: Add actual OCR logic here using image_path
             sample_text = f"Đây là văn bản mẫu được lấy từ ảnh: {image_path}. Văn bản này sẽ được xử lý và định dạng."
         else:
@@ -249,21 +253,62 @@ class ButtonActions:
 
         # Use thread-safe method to update UI
         self._set_text_to_editor_safe(sample_text)
-        print("Get text completed")
 
     @async_action
     def on_capture_clicked(self):
         """Action for Capture button"""
-        print("Capturing...")
-        time.sleep(1)  # Simulate capture work
-        print("Capture completed")
+        time.sleep(1)
 
     @async_action
     def on_upload_clicked(self):
-        """Action for Upload button"""
-        print("Uploading...")
-        time.sleep(1)  # Simulate upload work
-        print("Upload completed")
+        """Action for Upload button - Upload from device (camera or file)"""
+
+        # Use thread-safe method to show upload menu
+        safe_ui_update(self.main_window, "_show_upload_menu")
+
+    def _capture_from_camera(self):
+        """Capture image from camera"""
+        try:
+            # TODO: Implement camera capture
+            # For now, show a message
+            self._set_text_to_editor_safe(
+                "Chức năng chụp ảnh từ camera đang được phát triển..."
+            )
+        except Exception as e:
+            print(f"Error capturing from camera: {e}")
+            self._set_text_to_editor_safe(f"Lỗi khi mở camera: {str(e)}")
+
+    def _select_from_device(self):
+        """Select image from device storage"""
+        try:
+            from PySide6.QtWidgets import QFileDialog
+
+            # Open file dialog for image selection
+            file_path, _ = QFileDialog.getOpenFileName(
+                self.main_window,
+                "Chọn ảnh từ thiết bị",
+                "",
+                "Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff *.webp);;All Files (*)",
+            )
+
+            if file_path:
+                # Load the selected image into the image area
+                self._load_image_to_area(file_path)
+            else:
+                print("No file selected")
+
+        except Exception as e:
+            print(f"Error selecting from device: {e}")
+            self._set_text_to_editor_safe(f"Lỗi khi chọn ảnh: {str(e)}")
+
+    def _load_image_to_area(self, image_path):
+        """Load image to the image area"""
+        try:
+            # Use thread-safe method to load image
+            safe_ui_update(self.main_window, "_load_image_to_area", image_path)
+        except Exception as e:
+            print(f"Error loading image to area: {e}")
+            self._set_text_to_editor_safe(f"Lỗi khi tải ảnh: {str(e)}")
 
     # Action handlers without @async_action (run in main thread)
     def on_sentence_case_clicked(self):

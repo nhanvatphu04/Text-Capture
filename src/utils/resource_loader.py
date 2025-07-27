@@ -102,7 +102,6 @@ class ResourceLoader:
                 if font_id != -1:
                     font_families = font_db.applicationFontFamilies(font_id)
                     loaded_fonts.extend(font_families)
-                    print(f"Loaded font: {font_families}")
                 else:
                     print(f"Failed to load font: {font_file}")
             except Exception as e:
@@ -143,7 +142,6 @@ class ResourceLoader:
                     if font_id != -1:
                         font_families = font_db.applicationFontFamilies(font_id)
                         loaded_fonts.extend(font_families)
-                        print(f"Loaded font from file: {font_families}")
                     else:
                         print(f"Failed to load font from file: {font_file}")
                 else:

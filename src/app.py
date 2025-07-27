@@ -28,7 +28,6 @@ def run_app():
     resource_loader = ResourceLoader()
 
     # Load JetBrains Mono fonts
-    print("Loading JetBrains Mono fonts...")
     loaded_fonts = resource_loader.load_fonts()
 
     # Apply stylesheet

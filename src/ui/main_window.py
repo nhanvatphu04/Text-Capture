@@ -10,7 +10,9 @@ sys.path.insert(
     0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "src")
 )
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QFileDialog
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, QCoreApplication
 from src.widgets.mainwindow.ui_form import Ui_Main
 
 from src.core.button_manager import ButtonManager
@@ -28,6 +30,19 @@ class MainWindow(QWidget):
         self.ui = Ui_Main()
         self.ui.setupUi(self)
 
+        # Add image_path attribute to the existing QLabel
+        self.ui.lbImageArea.image_path = None
+
+        # Add drag & drop event handlers to the existing QLabel
+        self.ui.lbImageArea.dragEnterEvent = self._drag_enter_event
+        self.ui.lbImageArea.dragLeaveEvent = self._drag_leave_event
+        self.ui.lbImageArea.dropEvent = self._drop_event
+        self.ui.lbImageArea.mousePressEvent = self._mouse_press_event
+
+        # Add methods to the QLabel
+        self.ui.lbImageArea.load_image = self._load_image
+        self.ui.lbImageArea.clear_image = self._clear_image_impl
+
         # Initialize components
         self.buttons = self._gather_buttons()
         self.button_manager = ButtonManager(self.buttons)
@@ -36,6 +51,94 @@ class MainWindow(QWidget):
 
         # Setup connections
         self._setup_button_connections()
+
+    def _drag_enter_event(self, event):
+        """Handle drag enter event"""
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+            self.ui.lbImageArea.setStyleSheet(
+                "border: 2px dashed #4CAF50; background-color: rgba(76, 175, 80, 0.1);"
+            )
+        else:
+            event.ignore()
+
+    def _drag_leave_event(self, event):
+        """Handle drag leave event"""
+        self.ui.lbImageArea.setStyleSheet("")
+
+    def _drop_event(self, event):
+        """Handle drop event"""
+        self.ui.lbImageArea.setStyleSheet("")
+
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+            if urls:
+                file_path = urls[0].toLocalFile()
+                if self._is_valid_image_file(file_path):
+                    self._load_image(file_path)
+                    event.acceptProposedAction()
+                else:
+                    print(f"Invalid image file: {file_path}")
+        else:
+            event.ignore()
+
+    def _mouse_press_event(self, event):
+        """Handle mouse press event for file selection"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self.ui.lbImageArea,
+                "Chọn ảnh",
+                "",
+                "Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff *.webp)",
+            )
+            if file_path:
+                self._load_image(file_path)
+
+    def _is_valid_image_file(self, file_path):
+        """Check if the file is a valid image"""
+        if not os.path.exists(file_path):
+            return False
+
+        # Check file extension
+        valid_extensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp"]
+        file_ext = os.path.splitext(file_path)[1].lower()
+        return file_ext in valid_extensions
+
+    def _load_image(self, image_path):
+        """Load and display an image"""
+        try:
+            pixmap = QPixmap(image_path)
+            if not pixmap.isNull():
+                # Scale pixmap to fit the label while maintaining aspect ratio
+                scaled_pixmap = pixmap.scaled(
+                    self.ui.lbImageArea.size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+                self.ui.lbImageArea.setPixmap(scaled_pixmap)
+                self.ui.lbImageArea.image_path = image_path
+                print(f"Image loaded successfully: {image_path}")
+            else:
+                print(f"Failed to load image: {image_path}")
+        except Exception as e:
+            print(f"Error loading image: {e}")
+
+    def _clear_image_impl(self):
+        """Clear the image and reset to default state"""
+        self.ui.lbImageArea.clear()
+        self.ui.lbImageArea.setText(
+            QCoreApplication.translate(
+                "Main",
+                '<div style="text-align: center;">\n'
+                '<img src=":/src/resources/images/add_image.png"/>\n'
+                "<br/>\n"
+                '<span style="font-size: 12pt;">K\u00e9o v\u00e0 th\u1ea3 \u1ea3nh v\u00e0o \u0111\u00e2y</span>\n'
+                "</div>",
+                None,
+            )
+        )
+        self.ui.lbImageArea.image_path = None
+        self.ui.lbImageArea.setStyleSheet("")  # Reset any custom styling
 
     def _gather_buttons(self):
         """Gather all buttons from UI"""
@@ -72,7 +175,7 @@ class MainWindow(QWidget):
         """Thread-safe method to set text in the editor"""
         self.ui.txtEdit.setPlainText(text)
 
-    def _clear_image(self):
+    def _clear_image_safe(self):
         """Thread-safe method to clear the image"""
         if hasattr(self.ui.lbImageArea, "clear_image"):
             self.ui.lbImageArea.clear_image()
@@ -80,9 +183,113 @@ class MainWindow(QWidget):
             # Fallback: reset to default state
             self.ui.lbImageArea.clear()
             self.ui.lbImageArea.setText(
-                "Kéo thả ảnh vào đây<br>hoặc click để chọn file"
+                QCoreApplication.translate(
+                    "Main",
+                    '<div style="text-align: center;">\n'
+                    '<img src=":/src/resources/images/add_image.png"/>\n'
+                    "<br/>\n"
+                    '<span style="font-size: 12pt;">K\u00e9o v\u00e0 th\u1ea3 \u1ea3nh v\u00e0o \u0111\u00e2y</span>\n'
+                    "</div>",
+                    None,
+                )
             )
             self.ui.lbImageArea.image_path = None
+
+    def _load_image_to_area(self, image_path):
+        """Thread-safe method to load image to the image area"""
+        if hasattr(self.ui.lbImageArea, "load_image"):
+            self.ui.lbImageArea.load_image(image_path)
+        else:
+            # Fallback: load image directly
+            try:
+                from PySide6.QtGui import QPixmap
+                from PySide6.QtCore import Qt
+
+                pixmap = QPixmap(image_path)
+                if not pixmap.isNull():
+                    # Scale pixmap to fit the label while maintaining aspect ratio
+                    scaled_pixmap = pixmap.scaled(
+                        self.ui.lbImageArea.size(),
+                        Qt.AspectRatioMode.KeepAspectRatio,
+                        Qt.TransformationMode.SmoothTransformation,
+                    )
+                    self.ui.lbImageArea.setPixmap(scaled_pixmap)
+                    self.ui.lbImageArea.image_path = image_path
+                    print(f"Image loaded successfully: {image_path}")
+                else:
+                    print(f"Failed to load image: {image_path}")
+            except Exception as e:
+                print(f"Error loading image: {e}")
+
+    def _show_upload_menu(self):
+        """Show upload menu on main thread"""
+        try:
+            from PySide6.QtWidgets import QMenu
+            from PySide6.QtCore import QPoint
+
+            # Create context menu for upload options
+            menu = QMenu()
+            camera_action = menu.addAction("📷 Chụp ảnh từ camera")
+            file_action = menu.addAction("📁 Chọn ảnh từ thiết bị")
+            menu.addSeparator()
+            cancel_action = menu.addAction("❌ Hủy")
+
+            # Get button reference directly
+            button = self.ui.btnUpload
+            if button:
+                # Show menu at button position
+                pos = button.mapToGlobal(QPoint(0, button.height()))
+                action = menu.exec(pos)
+
+                if action == camera_action:
+                    self._handle_camera_capture()
+                elif action == file_action:
+                    self._handle_file_selection()
+                elif action == cancel_action:
+                    print("Upload cancelled")
+            else:
+                # Fallback: show file dialog directly
+                self._handle_file_selection()
+
+        except Exception as e:
+            print(f"Error showing upload menu: {e}")
+            # Fallback: show file dialog directly
+            self._handle_file_selection()
+
+    def _handle_camera_capture(self):
+        """Handle camera capture selection"""
+        try:
+            # TODO: Implement camera capture
+            # For now, show a message
+            self.ui.txtEdit.setPlainText(
+                "Chức năng chụp ảnh từ camera đang được phát triển..."
+            )
+        except Exception as e:
+            print(f"Error capturing from camera: {e}")
+            self.ui.txtEdit.setPlainText(f"Lỗi khi mở camera: {str(e)}")
+
+    def _handle_file_selection(self):
+        """Handle file selection"""
+        try:
+            from PySide6.QtWidgets import QFileDialog
+
+            # Open file dialog for image selection
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Chọn ảnh từ thiết bị",
+                "",
+                "Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff *.webp);;All Files (*)",
+            )
+
+            if file_path:
+                # Load the selected image into the image area
+                self._load_image_to_area(file_path)
+            else:
+                print("No file selected")
+
+        except Exception as e:
+            print(f"Error selecting from device: {e}")
+            self.ui.txtEdit.setPlainText(f"Lỗi khi chọn ảnh: {str(e)}")
 
     def disable_other_buttons(self, active_button):
         """Delegate to button manager"""
