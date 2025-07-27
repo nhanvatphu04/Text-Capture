@@ -1,0 +1,365 @@
+/* Dark Theme Stylesheet for Qt Application */
+
+/* Font Loading and Configuration */
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url(":/src/resources/fonts/JetBrainsMono-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url(":/src/resources/fonts/JetBrainsMono-Bold.ttf");
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url(":/src/resources/fonts/JetBrainsMono-Italic.ttf");
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url(":/src/resources/fonts/JetBrainsMono-Light.ttf");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "JetBrains Mono";
+    src: url(":/src/resources/fonts/JetBrainsMono-Medium.ttf");
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* Global Application Style */
+QApplication {
+    background-color: #2b2b2b;
+    color: #ffffff;
+}
+
+/* Main Window */
+QWidget {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    border: none;
+    font-family: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 9pt;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+QPushButton:disabled {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+/* Disabled Button Class */
+QPushButton[class="disabled"] {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+QPushButton[class="disabled"]:hover {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+QPushButton[class="disabled"]:pressed {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+/* Toggle Button Styles */
+QPushButton[class="toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+/* Toggle Button Active State */
+QPushButton[class="toggle"][active="true"] {
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #45a049;
+    font-weight: bold;
+}
+
+QPushButton[class="toggle"][active="true"]:hover {
+    background-color: #45a049;
+    border: 2px solid #3d8b40;
+}
+
+QPushButton[class="toggle"][active="true"]:pressed {
+    background-color: #3d8b40;
+    border: 2px solid #2e7d32;
+}
+
+/* Case Format Toggle Buttons (mutually exclusive) */
+QPushButton[class="case-toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="case-toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="case-toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+QPushButton[class="case-toggle"][active="true"] {
+    background-color: #2196F3;
+    color: white;
+    border: 2px solid #1976D2;
+    font-weight: bold;
+}
+
+QPushButton[class="case-toggle"][active="true"]:hover {
+    background-color: #1976D2;
+    border: 2px solid #1565C0;
+}
+
+QPushButton[class="case-toggle"][active="true"]:pressed {
+    background-color: #1565C0;
+    border: 2px solid #0D47A1;
+}
+
+/* Decorative Format Toggle Buttons (independent) */
+QPushButton[class="decorative-toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="decorative-toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="decorative-toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+QPushButton[class="decorative-toggle"][active="true"] {
+    background-color: #FF9800;
+    color: white;
+    border: 2px solid #F57C00;
+    font-weight: bold;
+}
+
+QPushButton[class="decorative-toggle"][active="true"]:hover {
+    background-color: #F57C00;
+    border: 2px solid #E65100;
+}
+
+QPushButton[class="decorative-toggle"][active="true"]:pressed {
+    background-color: #E65100;
+    border: 2px solid #BF360C;
+}
+
+/* Text Input Fields */
+QLineEdit, QTextEdit, QPlainTextEdit {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    padding: 6px 8px;
+    selection-background-color: #0078d4;
+}
+
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {
+    border: 2px solid #0078d4;
+    background-color: #252525;
+}
+
+QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background-color: #2b2b2b;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #555555;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #666666;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background-color: #2b2b2b;
+    height: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #555555;
+    border-radius: 6px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #666666;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+/* Image Label (Drag & Drop Area) */
+QLabel#lbImageArea {
+    background-color: #1e1e1e;
+    border: 2px dashed #555555;
+    border-radius: 8px;
+    color: #888888;
+    font-size: 10pt;
+    padding: 10px;
+}
+
+QLabel#lbImageArea:hover {
+    border: 2px dashed #0078d4;
+    background-color: rgba(0, 120, 212, 0.05);
+}
+
+/* Drag & Drop States for Image Area */
+QLabel#lbImageArea[dragOver="true"] {
+    border: 2px dashed #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+QLabel#lbImageArea[dragOver="false"] {
+    border: 2px dashed #555555;
+    background-color: #1e1e1e;
+}
+
+/* Loading State */
+QLabel#lbImageArea[loading="true"] {
+    border: 2px dashed #FF9800;
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+/* Error State */
+QLabel#lbImageArea[error="true"] {
+    border: 2px dashed #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Success State */
+QLabel#lbImageArea[success="true"] {
+    border: 2px dashed #4CAF50;
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Button States */
+QPushButton[processing="true"] {
+    background-color: #FF9800;
+    color: white;
+    border: 1px solid #F57C00;
+}
+
+QPushButton[processing="true"]:hover {
+    background-color: #F57C00;
+    border: 1px solid #E65100;
+}
+
+QPushButton[processing="true"]:pressed {
+    background-color: #E65100;
+    border: 1px solid #BF360C;
+}
+
+/* Text Editor States */
+QTextEdit[readonly="true"], QPlainTextEdit[readonly="true"] {
+    background-color: #2a2a2a;
+    color: #888888;
+    border: 1px solid #3a3a3a;
+}
+
+QTextEdit[processing="true"], QPlainTextEdit[processing="true"] {
+    border: 2px solid #FF9800;
+    background-color: rgba(255, 152, 0, 0.05);
+}
+
+/* Status Indicators */
+QLabel[status="success"] {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+QLabel[status="error"] {
+    color: #f44336;
+    font-weight: bold;
+}
+
+QLabel[status="warning"] {
+    color: #FF9800;
+    font-weight: bold;
+}
+
+QLabel[status="info"] {
+    color: #2196F3;
+    font-weight: bold;
+} 

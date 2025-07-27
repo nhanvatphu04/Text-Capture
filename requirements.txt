@@ -1,0 +1,5 @@
+pillow
+PySide6
+pytesseract
+EasyOCR
+python-docx
