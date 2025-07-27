@@ -13,6 +13,8 @@
         <file>src/resources/images/aim.png</file>
         <file>src/resources/images/lettercase.png</file>
         <file>src/resources/images/lower.png</file>
+        <file>src/resources/images/strikethrough.png</file>
+        <file>src/resources/images/underline.png</file>
         <file>src/resources/images/upper.png</file>
         
         <!-- Fonts -->

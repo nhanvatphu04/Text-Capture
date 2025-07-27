@@ -9,21 +9,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>400</height>
    </size>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>Text Capture</string>
@@ -37,7 +40,7 @@
     <rect>
      <x>30</x>
      <y>10</y>
-     <width>340</width>
+     <width>540</width>
      <height>24</height>
     </rect>
    </property>
@@ -53,9 +56,12 @@
     <rect>
      <x>30</x>
      <y>50</y>
-     <width>150</width>
-     <height>150</height>
+     <width>200</width>
+     <height>200</height>
     </rect>
+   </property>
+   <property name="acceptDrops">
+    <bool>true</bool>
    </property>
    <property name="frameShape">
     <enum>QFrame::Shape::Box</enum>
@@ -93,10 +99,13 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>250</y>
-     <width>70</width>
+     <y>350</y>
+     <width>90</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>Chụp ảnh từ màn hình</string>
    </property>
    <property name="text">
     <string>Chụp ảnh</string>
@@ -105,8 +114,8 @@
   <widget class="QLabel" name="lbImageOption">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>210</y>
+     <x>100</x>
+     <y>320</y>
      <width>60</width>
      <height>24</height>
     </rect>
@@ -121,11 +130,14 @@
   <widget class="QPushButton" name="btnUpload">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>250</y>
-     <width>70</width>
+     <x>140</x>
+     <y>350</y>
+     <width>90</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>Tải ảnh từ thiết bị</string>
    </property>
    <property name="text">
     <string>Tải ảnh</string>
@@ -134,18 +146,18 @@
   <widget class="QTextEdit" name="txtEdit">
    <property name="geometry">
     <rect>
-     <x>200</x>
+     <x>260</x>
      <y>50</y>
-     <width>170</width>
-     <height>170</height>
+     <width>310</width>
+     <height>270</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="btnSentenceCase">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>250</y>
+     <x>270</x>
+     <y>350</y>
      <width>50</width>
      <height>24</height>
     </rect>
@@ -164,8 +176,8 @@
   <widget class="QPushButton" name="btnLowerCase">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>250</y>
+     <x>330</x>
+     <y>350</y>
      <width>50</width>
      <height>24</height>
     </rect>
@@ -184,8 +196,8 @@
   <widget class="QPushButton" name="btnUpperCase">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>250</y>
+     <x>390</x>
+     <y>350</y>
      <width>50</width>
      <height>24</height>
     </rect>
@@ -199,6 +211,84 @@
    <property name="icon">
     <iconset resource="../../../resources.qrc">
      <normaloff>:/src/resources/images/upper.png</normaloff>:/src/resources/images/upper.png</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRefresh">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>280</y>
+     <width>90</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Làm mới ảnh</string>
+   </property>
+   <property name="text">
+    <string>Làm mới</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnGetText">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>280</y>
+     <width>90</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Lấy chữ từ ảnh</string>
+   </property>
+   <property name="text">
+    <string>Lấy chữ</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnUnderline">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>350</y>
+     <width>50</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Gạch chân</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../resources.qrc">
+     <normaloff>:/src/resources/images/underline.png</normaloff>:/src/resources/images/underline.png</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnStrikethrough">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>350</y>
+     <width>50</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Gạch ngang</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../resources.qrc">
+     <normaloff>:/src/resources/images/strikethrough.png</normaloff>:/src/resources/images/strikethrough.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
    </property>
   </widget>
  </widget>

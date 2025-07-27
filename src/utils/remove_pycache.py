@@ -5,7 +5,7 @@ def remove_all_pycache(root_dir=None):
     """Remove all __pycache__ directories in the given root_dir (or current directory if None)."""
     if root_dir is None:
         # Set root_dir to the project root (parent directory of this script's directory)
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     count = 0
     for dirpath, dirnames, filenames in os.walk(root_dir):
         if "__pycache__" in dirnames:
