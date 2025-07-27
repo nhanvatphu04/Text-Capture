@@ -1,1 +1,4 @@
+pillow
 PySide6
+pytesseract
+EasyOCR
