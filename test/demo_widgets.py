@@ -9,19 +9,19 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                                QListWidget, QSpinBox, QMenuBar, QStatusBar,
                                QToolBar, QMessageBox)
 from PySide6.QtCore import Qt, QTimer, QFile, QIODevice, QTextStream
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFontDatabase
 
 # Import resources to register them with Qt
 # Add parent directory to path to import rc_resources
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import rc_resources
+import src.resources_rc
 
 def load_stylesheet_from_file():
     """Load and return the stylesheet from style.qss file"""
     try:
         # Look for style.qss in the project root (one directory up from this file)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        style_file = os.path.join(project_root, "style.qss")
+        style_file = os.path.join(project_root, "src", "resources", "styles", "style.qss")
         with open(style_file, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
@@ -36,7 +36,7 @@ def load_stylesheet_from_resources():
     """Load and return the stylesheet from resources"""
     try:
         # Load from resources
-        file = QFile(":/style.qss")
+        file = QFile(":/src/resources/styles/style.qss")
         if file.open(QIODevice.ReadOnly | QIODevice.Text):
             stream = QTextStream(file)
             stylesheet = stream.readAll()
@@ -48,6 +48,39 @@ def load_stylesheet_from_resources():
     except Exception as e:
         print(f"Error loading stylesheet from resources: {e}")
         return ""
+
+
+def load_fonts_from_resources():
+    """Load JetBrains Mono fonts from resources"""
+    font_files = [
+        ":/src/resources/fonts/JetBrainsMono-Regular.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Bold.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Italic.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Light.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Medium.ttf"
+    ]
+    
+    font_db = QFontDatabase()
+    loaded_fonts = []
+    
+    for font_file in font_files:
+        try:
+            font_id = font_db.addApplicationFont(font_file)
+            if font_id != -1:
+                font_families = font_db.applicationFontFamilies(font_id)
+                loaded_fonts.extend(font_families)
+                print(f"Loaded font: {font_families}")
+            else:
+                print(f"Failed to load font: {font_file}")
+        except Exception as e:
+            print(f"Error loading font {font_file}: {e}")
+    
+    # Verify fonts are available
+    available_fonts = font_db.families()
+    jetbrains_fonts = [f for f in available_fonts if "JetBrains" in f]
+    print(f"Available JetBrains fonts: {jetbrains_fonts}")
+    
+    return loaded_fonts
 
 
 class DemoWindow(QMainWindow):
@@ -154,11 +187,34 @@ class DemoWindow(QMainWindow):
         
         label = QLabel("This is a sample label with dark theme styling")
         text_edit = QTextEdit()
-        text_edit.setPlainText("This is a text editor with dark theme.\nYou can type here to see the styling.")
+        text_edit.setPlainText("The quick brown fox jumps over the lazy dog. This is a text editor with dark theme.\nYou can type here to see the styling.")
         text_edit.setMaximumHeight(100)
+        
+        # Add code editor example with JetBrains Mono
+        code_edit = QTextEdit()
+        code_edit.setProperty("class", "code")
+        code_edit.setPlainText("""# Python code example with JetBrains Mono
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Test the function
+for i in range(10):
+    print(f"fib({i}) = {fibonacci(i)}")""")
+        code_edit.setMaximumHeight(120)
+        
+        # Force apply font to code editor
+        from PySide6.QtGui import QFont
+        jetbrains_font = QFont("JetBrains Mono", 10)
+        code_edit.setFont(jetbrains_font)
+        
+        # Also set font for regular text editor
+        text_edit.setFont(jetbrains_font)
         
         text_layout.addWidget(label)
         text_layout.addWidget(text_edit)
+        text_layout.addWidget(code_edit)
         
         layout.addWidget(text_group)
         
@@ -296,6 +352,10 @@ class DemoWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
+    # Load JetBrains Mono fonts from resources
+    print("Loading JetBrains Mono fonts...")
+    loaded_fonts = load_fonts_from_resources()
+    
     # Apply dark theme stylesheet from resources
     # Fallback to file if resources fail
     stylesheet = load_stylesheet_from_resources()
@@ -305,6 +365,15 @@ if __name__ == "__main__":
     
     if stylesheet:
         app.setStyleSheet(stylesheet)
+        print("Stylesheet applied successfully")
+    else:
+        print("Warning: No stylesheet applied")
+    
+    # Set default font for entire application
+    from PySide6.QtGui import QFont
+    default_font = QFont("JetBrains Mono", 9)
+    app.setFont(default_font)
+    print(f"Default app font set to: {default_font.family()}")
     
     window = DemoWindow()
     window.show()

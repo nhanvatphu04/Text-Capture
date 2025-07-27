@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import QFile, QIODevice, QTextStream
+from PySide6.QtGui import QFontDatabase
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -56,8 +57,40 @@ def load_stylesheet_from_resources():
         return ""
 
 
+def load_fonts_from_resources():
+    """Load JetBrains Mono fonts from resources"""
+    font_files = [
+        ":/src/resources/fonts/JetBrainsMono-Regular.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Bold.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Italic.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Light.ttf",
+        ":/src/resources/fonts/JetBrainsMono-Medium.ttf"
+    ]
+    
+    font_db = QFontDatabase()
+    loaded_fonts = []
+    
+    for font_file in font_files:
+        try:
+            font_id = font_db.addApplicationFont(font_file)
+            if font_id != -1:
+                font_families = font_db.applicationFontFamilies(font_id)
+                loaded_fonts.extend(font_families)
+                print(f"Loaded font: {font_families}")
+            else:
+                print(f"Failed to load font: {font_file}")
+        except Exception as e:
+            print(f"Error loading font {font_file}: {e}")
+    
+    return loaded_fonts
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    
+    # Load JetBrains Mono fonts from resources
+    print("Loading JetBrains Mono fonts...")
+    loaded_fonts = load_fonts_from_resources()
     
     # Apply dark theme stylesheet from resources
     # Fallback to file if resources fail
