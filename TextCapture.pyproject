@@ -1,0 +1,8 @@
+{
+    "files": [
+        "REAMe.md",
+        "main.py",
+        "resources.qrc",
+        "widgets/form.ui"
+    ]
+}
