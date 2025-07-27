@@ -85,6 +85,137 @@ QPushButton:disabled {
     border: 1px solid #3a3a3a;
 }
 
+/* Disabled Button Class */
+QPushButton[class="disabled"] {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+QPushButton[class="disabled"]:hover {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+QPushButton[class="disabled"]:pressed {
+    background-color: #2a2a2a;
+    color: #666666;
+    border: 1px solid #3a3a3a;
+}
+
+/* Toggle Button Styles */
+QPushButton[class="toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+/* Toggle Button Active State */
+QPushButton[class="toggle"][active="true"] {
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #45a049;
+    font-weight: bold;
+}
+
+QPushButton[class="toggle"][active="true"]:hover {
+    background-color: #45a049;
+    border: 2px solid #3d8b40;
+}
+
+QPushButton[class="toggle"][active="true"]:pressed {
+    background-color: #3d8b40;
+    border: 2px solid #2e7d32;
+}
+
+/* Case Format Toggle Buttons (mutually exclusive) */
+QPushButton[class="case-toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="case-toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="case-toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+QPushButton[class="case-toggle"][active="true"] {
+    background-color: #2196F3;
+    color: white;
+    border: 2px solid #1976D2;
+    font-weight: bold;
+}
+
+QPushButton[class="case-toggle"][active="true"]:hover {
+    background-color: #1976D2;
+    border: 2px solid #1565C0;
+}
+
+QPushButton[class="case-toggle"][active="true"]:pressed {
+    background-color: #1565C0;
+    border: 2px solid #0D47A1;
+}
+
+/* Decorative Format Toggle Buttons (independent) */
+QPushButton[class="decorative-toggle"] {
+    background-color: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+QPushButton[class="decorative-toggle"]:hover {
+    background-color: #505050;
+    border: 1px solid #666666;
+}
+
+QPushButton[class="decorative-toggle"]:pressed {
+    background-color: #303030;
+    border: 1px solid #444444;
+}
+
+QPushButton[class="decorative-toggle"][active="true"] {
+    background-color: #FF9800;
+    color: white;
+    border: 2px solid #F57C00;
+    font-weight: bold;
+}
+
+QPushButton[class="decorative-toggle"][active="true"]:hover {
+    background-color: #F57C00;
+    border: 2px solid #E65100;
+}
+
+QPushButton[class="decorative-toggle"][active="true"]:pressed {
+    background-color: #E65100;
+    border: 2px solid #BF360C;
+}
+
 /* Primary Button */
 QPushButton[class="primary"] {
     background-color: #0078d4;

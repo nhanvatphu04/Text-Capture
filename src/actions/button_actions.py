@@ -2,7 +2,9 @@
 Button action handlers
 """
 import time
-from src.core.async_utils import async_action
+import re
+from src.core.async_utils import async_action, safe_ui_update
+from PySide6.QtGui import QTextCharFormat, QFont
 
 
 class ButtonActions:
@@ -10,67 +12,237 @@ class ButtonActions:
     
     def __init__(self, main_window):
         self.main_window = main_window
+        self.format_states = {
+            'underline': False,
+            'strikethrough': False,
+            'uppercase': False,
+            'lowercase': False,
+            'sentence_case': False
+        }
 
-    # Các action handlers với decorator @async_action
+    def _get_text_from_editor(self):
+        return self.main_window.ui.txtEdit.toPlainText()
+    
+    def _set_text_to_editor(self, text):
+        self.main_window.ui.txtEdit.setPlainText(text)
+    
+    def _set_text_to_editor_safe(self, text):
+        """Thread-safe version of _set_text_to_editor"""
+        safe_ui_update(self.main_window, "_set_text_to_editor", text)
+    
+    def _apply_format_to_selection(self, format_func, format_type=None):
+        cursor = self.main_window.ui.txtEdit.textCursor()
+        
+        if cursor.hasSelection():
+            # Apply format to selected text
+            cursor.mergeCharFormat(format_func())
+        else:
+            # Apply format to entire document
+            cursor.select(cursor.SelectionType.Document)
+            cursor.mergeCharFormat(format_func())
+        
+        # Update state if format_type is provided
+        if format_type:
+            self.format_states[format_type] = not self.format_states[format_type]
+            self._update_button_appearance(format_type)
+
+    def _update_button_appearance(self, format_type):
+        button_map = {
+            'underline': self.main_window.ui.btnUnderline,
+            'strikethrough': self.main_window.ui.btnStrikethrough,
+            'uppercase': self.main_window.ui.btnUpperCase,
+            'lowercase': self.main_window.ui.btnLowerCase,
+            'sentence_case': self.main_window.ui.btnSentenceCase
+        }
+        
+        button = button_map.get(format_type)
+        if button:
+            is_active = self.format_states[format_type]
+            
+            # Set CSS class based on button type
+            if format_type in ['uppercase', 'lowercase', 'sentence_case']:
+                button.setProperty("class", "case-toggle")
+            elif format_type in ['underline', 'strikethrough']:
+                button.setProperty("class", "decorative-toggle")
+            else:
+                button.setProperty("class", "toggle")
+            
+            # Set active state
+            button.setProperty("active", "true" if is_active else "false")
+            
+            # Apply styles
+            button.style().unpolish(button)
+            button.style().polish(button)
+
+    def _create_underline_format(self):
+        """Create underline format"""
+        format = QTextCharFormat()
+        format.setFontUnderline(True)
+        return format
+
+    def _create_strikethrough_format(self):
+        """Create strikethrough format"""
+        format = QTextCharFormat()
+        format.setFontStrikeOut(True)
+        return format
+
+    def _create_uppercase_format(self):
+        """Create uppercase format"""
+        format = QTextCharFormat()
+        format.setFontCapitalization(QFont.Capitalization.AllUppercase)
+        return format
+
+    def _create_lowercase_format(self):
+        """Create lowercase format"""
+        format = QTextCharFormat()
+        format.setFontCapitalization(QFont.Capitalization.AllLowercase)
+        return format
+
+    def _create_sentence_case_format(self):
+        """Create sentence case format"""
+        format = QTextCharFormat()
+        format.setFontCapitalization(QFont.Capitalization.Capitalize)
+        return format
+
+    def _create_normal_format(self):
+        """Create normal format (no special formatting)"""
+        format = QTextCharFormat()
+        format.setFontUnderline(False)
+        format.setFontStrikeOut(False)
+        format.setFontCapitalization(QFont.Capitalization.MixedCase)
+        return format
+
+    def _create_format_without_underline(self):
+        """Create format without underline but keep other formatting"""
+        format = QTextCharFormat()
+        format.setFontUnderline(False)
+        return format
+
+    def _create_format_without_strikethrough(self):
+        """Create format without strikethrough but keep other formatting"""
+        format = QTextCharFormat()
+        format.setFontStrikeOut(False)
+        return format
+
+    def _create_format_without_case(self):
+        """Create format without case formatting but keep other formatting"""
+        format = QTextCharFormat()
+        format.setFontCapitalization(QFont.Capitalization.MixedCase)
+        return format
+
+    def _toggle_case_format(self, format_type, format_func):
+        """Toggle case formatting (uppercase, lowercase, sentence_case) - only one active"""
+        cursor = self.main_window.ui.txtEdit.textCursor()
+        
+        # Turn off all other case formats first
+        case_formats = ['uppercase', 'lowercase', 'sentence_case']
+        for case_format in case_formats:
+            if case_format != format_type and self.format_states[case_format]:
+                self.format_states[case_format] = False
+                self._update_button_appearance(case_format)
+        
+        if cursor.hasSelection():
+            # Apply to selected text
+            if self.format_states[format_type]:
+                # Turn off case formatting
+                cursor.mergeCharFormat(self._create_format_without_case())
+            else:
+                # Turn on case formatting
+                cursor.mergeCharFormat(format_func())
+        else:
+            # Apply to entire document
+            cursor.select(cursor.SelectionType.Document)
+            if self.format_states[format_type]:
+                # Turn off case formatting
+                cursor.mergeCharFormat(self._create_format_without_case())
+            else:
+                # Turn on case formatting
+                cursor.mergeCharFormat(format_func())
+        
+        # Update state
+        self.format_states[format_type] = not self.format_states[format_type]
+        self._update_button_appearance(format_type)
+
+    def _toggle_decorative_format(self, format_type, format_func, remove_format_func):
+        """Toggle decorative formatting (underline, strikethrough) - independent"""
+        cursor = self.main_window.ui.txtEdit.textCursor()
+        
+        if cursor.hasSelection():
+            # Apply to selected text
+            if self.format_states[format_type]:
+                # Turn off specific formatting
+                cursor.mergeCharFormat(remove_format_func())
+            else:
+                # Turn on specific formatting
+                cursor.mergeCharFormat(format_func())
+        else:
+            # Apply to entire document
+            cursor.select(cursor.SelectionType.Document)
+            if self.format_states[format_type]:
+                # Turn off specific formatting
+                cursor.mergeCharFormat(remove_format_func())
+            else:
+                # Turn on specific formatting
+                cursor.mergeCharFormat(format_func())
+        
+        # Update state
+        self.format_states[format_type] = not self.format_states[format_type]
+        self._update_button_appearance(format_type)
+
+    # Action handlers with @async_action (only for truly async operations)
     @async_action
     def on_refresh_clicked(self):
-        """Action cho button Refresh"""
+        """Action for Refresh button"""
         print("Refreshing...")
-        time.sleep(2)  # Simulate work
+        # Clear txtEdit content - use thread-safe method
+        self._set_text_to_editor_safe("")
+        # Reset all format states
+        for format_type in self.format_states:
+            self.format_states[format_type] = False
+            self._update_button_appearance(format_type)
         print("Refresh completed")
 
     @async_action
     def on_get_text_clicked(self):
-        """Action cho button Get Text"""
+        """Action for Get Text button"""
         print("Getting text...")
-        time.sleep(1.5)  # Simulate work
+        # TODO: Add OCR logic here
+        sample_text = "Đây là văn bản mẫu được lấy từ ảnh. Văn bản này sẽ được xử lý và định dạng."
+        # Use thread-safe method to update UI
+        self._set_text_to_editor_safe(sample_text)
         print("Get text completed")
 
     @async_action
     def on_capture_clicked(self):
-        """Action cho button Capture"""
+        """Action for Capture button"""
         print("Capturing...")
-        time.sleep(2.5)  # Simulate work
+        time.sleep(1)  # Simulate capture work
         print("Capture completed")
 
     @async_action
     def on_upload_clicked(self):
-        """Action cho button Upload"""
+        """Action for Upload button"""
         print("Uploading...")
-        time.sleep(3)  # Simulate work
+        time.sleep(1)  # Simulate upload work
         print("Upload completed")
 
-    @async_action
+    # Action handlers without @async_action (run in main thread)
     def on_sentence_case_clicked(self):
-        """Action cho button Sentence Case"""
-        print("Converting to sentence case...")
-        time.sleep(1)  # Simulate work
-        print("Sentence case conversion completed")
+        """Action for Sentence Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format('sentence_case', self._create_sentence_case_format)
 
-    @async_action
     def on_lower_case_clicked(self):
-        """Action cho button Lower Case"""
-        print("Converting to lower case...")
-        time.sleep(1)  # Simulate work
-        print("Lower case conversion completed")
+        """Action for Lower Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format('lowercase', self._create_lowercase_format)
 
-    @async_action
     def on_upper_case_clicked(self):
-        """Action cho button Upper Case"""
-        print("Converting to upper case...")
-        time.sleep(1)  # Simulate work
-        print("Upper case conversion completed")
+        """Action for Upper Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format('uppercase', self._create_uppercase_format)
 
-    @async_action
     def on_underline_clicked(self):
-        """Action cho button Underline"""
-        print("Applying underline...")
-        time.sleep(1)  # Simulate work
-        print("Underline applied")
+        """Action for Underline button - Toggle (independent)"""
+        self._toggle_decorative_format('underline', self._create_underline_format, self._create_format_without_underline)
 
-    @async_action
     def on_strikethrough_clicked(self):
-        """Action cho button Strikethrough"""
-        print("Applying strikethrough...")
-        time.sleep(1)  # Simulate work
-        print("Strikethrough applied") 
+        """Action for Strikethrough button - Toggle (independent)"""
+        self._toggle_decorative_format('strikethrough', self._create_strikethrough_format, self._create_format_without_strikethrough)

@@ -48,7 +48,7 @@ class MainWindow(QWidget):
         return buttons
     
     def _setup_button_connections(self):
-        """Thiết lập kết nối cho tất cả buttons"""
+        """Set up connections for all buttons"""
         self.ui.btnRefresh.clicked.connect(self.button_actions.on_refresh_clicked)
         self.ui.btnGetText.clicked.connect(self.button_actions.on_get_text_clicked)
         self.ui.btnCapture.clicked.connect(self.button_actions.on_capture_clicked)
@@ -58,6 +58,10 @@ class MainWindow(QWidget):
         self.ui.btnUpperCase.clicked.connect(self.button_actions.on_upper_case_clicked)
         self.ui.btnUnderline.clicked.connect(self.button_actions.on_underline_clicked)
         self.ui.btnStrikethrough.clicked.connect(self.button_actions.on_strikethrough_clicked)
+
+    def _set_text_to_editor(self, text):
+        """Thread-safe method to set text in the editor"""
+        self.ui.txtEdit.setPlainText(text)
 
     def disable_other_buttons(self, active_button):
         """Delegate to button manager"""

@@ -11,18 +11,24 @@ class ButtonManager:
         self.action_thread = None
     
     def disable_other_buttons(self, active_button):
-        """Disable tất cả buttons trừ button đang được click"""
+        """Disable all buttons except the active one"""
         for button in self.buttons:
             if button != active_button:
                 button.setEnabled(False)
-                button.setStyleSheet("QPushButton:disabled { background-color: #f0f0f0; color: #a0a0a0; }")
+                # Set disabled class instead of inline style
+                button.setProperty("class", "disabled")
+                button.style().unpolish(button)
+                button.style().polish(button)
 
     def enable_all_buttons(self):
-        """Enable lại tất cả buttons"""
+        """Enable all buttons"""
         for button in self.buttons:
             button.setEnabled(True)
-            button.setStyleSheet("")  # Reset về style mặc định
+            # Reset to default class
+            button.setProperty("class", "")
+            button.style().unpolish(button)
+            button.style().polish(button)
 
     def on_action_finished(self):
-        """Callback khi action hoàn thành"""
+        """Callback when action is finished"""
         self.enable_all_buttons() 
