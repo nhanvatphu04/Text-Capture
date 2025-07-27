@@ -32,6 +32,175 @@
    <iconset resource="../../../resources.qrc">
     <normaloff>:/src/resources/icons/app.png</normaloff>:/src/resources/icons/app.png</iconset>
   </property>
+  <widget class="QLabel" name="lbTitle">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>10</y>
+     <width>340</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Text Capture Tool - Lấy chữ từ ảnh</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbImageArea">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>50</y>
+     <width>150</width>
+     <height>150</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Shape::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Shadow::Plain</enum>
+   </property>
+   <property name="text">
+    <string>&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;img src=&quot;:/src/resources/images/add_image.png&quot;/&gt;
+&lt;br/&gt;
+&lt;span style=&quot;font-size: 12pt;&quot;&gt;Kéo và thả ảnh vào đây&lt;/span&gt;
+&lt;/div&gt;</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::TextFormat::RichText</enum>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="indent">
+    <number>-1</number>
+   </property>
+   <property name="openExternalLinks">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCapture">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>250</y>
+     <width>70</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Chụp ảnh</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbImageOption">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>210</y>
+     <width>60</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>hoặc</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnUpload">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>250</y>
+     <width>70</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tải ảnh</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txtEdit">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>50</y>
+     <width>170</width>
+     <height>170</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSentenceCase">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>250</y>
+     <width>50</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Viết hoa đầu câu</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../resources.qrc">
+     <normaloff>:/src/resources/images/lettercase.png</normaloff>:/src/resources/images/lettercase.png</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnLowerCase">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>250</y>
+     <width>50</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Viết thường toàn bộ</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../resources.qrc">
+     <normaloff>:/src/resources/images/lower.png</normaloff>:/src/resources/images/lower.png</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnUpperCase">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>250</y>
+     <width>50</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Viết hoa toàn bộ</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../resources.qrc">
+     <normaloff>:/src/resources/images/upper.png</normaloff>:/src/resources/images/upper.png</iconset>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="../../../resources.qrc"/>

@@ -9,6 +9,7 @@
         <file>src/resources/icons/app.png</file>
         
         <!-- Images -->
+        <file>src/resources/images/add_image.png</file>
         <file>src/resources/images/aim.png</file>
         <file>src/resources/images/lettercase.png</file>
         <file>src/resources/images/lower.png</file>
