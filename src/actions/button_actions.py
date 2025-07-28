@@ -277,8 +277,12 @@ class ButtonActions:
             return
 
         current_ui_language = self.main_window.ui.cbLanguage.currentText()
-        language_mapping = {"En": "eng", "Vi": "vie", "Jp": "jpn"}
-        selected_language = language_mapping.get(current_ui_language, "eng")
+        # Mapping cho Tesseract (C++/Python Tesseract)
+        tesseract_mapping = {"En": "eng", "Vi": "vie", "Jp": "jpn"}
+        # Mapping cho EasyOCR (chuẩn ISO)
+        easyocr_mapping = {"En": "en", "Vi": "vi", "Jp": "ja"}
+        selected_language_tesseract = tesseract_mapping.get(current_ui_language, "eng")
+        selected_language_easyocr = easyocr_mapping.get(current_ui_language, "en")
 
         # Try C++ implementation first, then fallback to Python
         extracted_text = None
@@ -286,8 +290,8 @@ class ButtonActions:
         
         # First attempt: C++ implementation
         try:
-            print(f"Attempting C++ OCR with language: {selected_language}")
-            ocr_engine = OCREngine(use_cpp=True, language=selected_language)
+            print(f"Attempting C++ OCR with language: {selected_language_tesseract}")
+            ocr_engine = OCREngine(use_cpp=True, language=selected_language_tesseract)
             extracted_text = ocr_engine.extract_text(image_path)
             
             if extracted_text and extracted_text.strip():
@@ -304,8 +308,8 @@ class ButtonActions:
         
         # Second attempt: Python implementation
         try:
-            print(f"Attempting Python OCR with language: {selected_language}")
-            ocr_engine = OCREngine(use_cpp=False, language=selected_language)
+            print(f"Attempting Python OCR with language: {selected_language_easyocr}")
+            ocr_engine = OCREngine(use_cpp=False, language=selected_language_easyocr)
             extracted_text = ocr_engine.extract_text(image_path)
             
             if extracted_text and extracted_text.strip():
