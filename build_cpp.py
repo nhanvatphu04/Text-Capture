@@ -34,6 +34,8 @@ def find_msvc_compiler():
         if os.path.exists(vs_path):
             print(f"✓ Visual Studio found at: {vs_path}")
             return True
+        else:
+            print(f"✗ Visual Studio not found at: {vs_path}")
     
     # Try to find cl.exe in PATH
     try:
@@ -42,6 +44,7 @@ def find_msvc_compiler():
             print("✓ MSVC compiler (cl.exe) found in PATH")
             return True
     except FileNotFoundError:
+        print("✗ MSVC compiler (cl.exe) not found in PATH")
         pass
     
     # Try to find cl.exe in common locations
@@ -49,7 +52,8 @@ def find_msvc_compiler():
     if cl_paths:
         print(f"✓ MSVC compiler found at: {cl_paths[0]}")
         return True
-    
+    else:
+        print("✗ MSVC compiler not found in common locations")
     print("✗ MSVC compiler not found")
     return False
 

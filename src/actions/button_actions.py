@@ -2,11 +2,11 @@
 Button action handlers
 """
 
-import time
 import re
 from src.core.async_utils import async_action, safe_ui_update
 from PySide6.QtGui import QTextCharFormat, QFont
 from PySide6.QtCore import QCoreApplication
+from src.ocr import OCREngine
 
 
 class ButtonActions:
@@ -21,6 +21,8 @@ class ButtonActions:
             "lowercase": False,
             "sentence_case": False,
         }
+        # Initialize default language
+        self.current_language = "eng"
 
     def _get_text_from_editor(self):
         return self.main_window.ui.txtEdit.toPlainText()
@@ -199,6 +201,34 @@ class ButtonActions:
         self.format_states[format_type] = not self.format_states[format_type]
         self._update_button_appearance(format_type)
 
+    def on_sentence_case_clicked(self):
+        """Action for Sentence Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format("sentence_case", self._create_sentence_case_format)
+
+    def on_lower_case_clicked(self):
+        """Action for Lower Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format("lowercase", self._create_lowercase_format)
+
+    def on_upper_case_clicked(self):
+        """Action for Upper Case button - Toggle (mutually exclusive)"""
+        self._toggle_case_format("uppercase", self._create_uppercase_format)
+
+    def on_underline_clicked(self):
+        """Action for Underline button - Toggle (independent)"""
+        self._toggle_decorative_format(
+            "underline",
+            self._create_underline_format,
+            self._create_format_without_underline,
+        )
+
+    def on_strikethrough_clicked(self):
+        """Action for Strikethrough button - Toggle (independent)"""
+        self._toggle_decorative_format(
+            "strikethrough",
+            self._create_strikethrough_format,
+            self._create_format_without_strikethrough,
+        )
+
     # Action handlers with @async_action (only for truly async operations)
     @async_action
     def on_refresh_clicked(self):
@@ -241,37 +271,72 @@ class ButtonActions:
     @async_action
     def on_get_text_clicked(self):
         """Action for Get Text button"""
-
-        # Get current image path
         image_path = self._get_current_image_path()
         if not image_path:
-            print("No image selected")
-            self._set_text_to_editor_safe("Vui lòng chọn ảnh trước khi thực hiện OCR")
+            self.main_window.set_status_message("Vui lòng chọn ảnh trước khi thực hiện OCR", "error")
             return
 
+        current_ui_language = self.main_window.ui.cbLanguage.currentText()
+        language_mapping = {"En": "eng", "Vi": "vie", "Jp": "jpn"}
+        selected_language = language_mapping.get(current_ui_language, "eng")
+
+        # Try C++ implementation first, then fallback to Python
+        extracted_text = None
+        error_message = None
+        
+        # First attempt: C++ implementation
         try:
-            # Import OCR engine
-            from src.ocr import OCREngine
-            
-            # Initialize OCR engine (will automatically choose C++ or Python)
-            ocr_engine = OCREngine(use_cpp=True, language='vie')
-            
-            # Extract text from image
+            print(f"Attempting C++ OCR with language: {selected_language}")
+            ocr_engine = OCREngine(use_cpp=True, language=selected_language)
             extracted_text = ocr_engine.extract_text(image_path)
             
-            if extracted_text.strip():
+            if extracted_text and extracted_text.strip():
+                print("C++ OCR successful")
                 self._set_text_to_editor_safe(extracted_text)
+                return
             else:
-                self._set_text_to_editor_safe("Không thể nhận dạng văn bản từ ảnh này. Vui lòng thử ảnh khác.")
+                print("C++ OCR returned empty text, trying Python fallback...")
+                error_message = "C++ OCR không nhận diện được text, đang thử Python..."
                 
         except Exception as e:
-            print(f"OCR error: {e}")
-            self._set_text_to_editor_safe(f"Lỗi khi xử lý OCR: {str(e)}")
+            print(f"C++ OCR failed: {e}")
+            error_message = f"C++ OCR lỗi: {str(e)}, đang thử Python..."
+        
+        # Second attempt: Python implementation
+        try:
+            print(f"Attempting Python OCR with language: {selected_language}")
+            ocr_engine = OCREngine(use_cpp=False, language=selected_language)
+            extracted_text = ocr_engine.extract_text(image_path)
+            
+            if extracted_text and extracted_text.strip():
+                print("Python OCR successful")
+                self._set_text_to_editor_safe(extracted_text)
+                return
+            else:
+                print("Python OCR also returned empty text")
+                self._set_text_to_editor_safe("❌ Không thể nhận dạng văn bản từ ảnh này.\n\n💡 Gợi ý:\n- Kiểm tra chất lượng ảnh\n- Đảm bảo ảnh có text rõ ràng\n- Thử với ngôn ngữ khác")
+                
+        except Exception as e:
+            print(f"Python OCR failed: {e}")
+            self._set_text_to_editor_safe(f"❌ Cả C++ và Python OCR đều lỗi:\n\nC++: {error_message}\nPython: {str(e)}\n\n💡 Gợi ý:\n- Kiểm tra ảnh có hợp lệ không\n- Thử ảnh khác\n- Kiểm tra cài đặt Tesseract")
 
     @async_action
     def on_language_changed(self, text=None):
         """Action for Language button"""
         print(f"Language changed to: {text}")
+
+        # Map UI language codes to Tesseract language codes
+        language_mapping = {"En": "eng", "Vi": "vie", "Jp": "jpn"}
+
+        # Get the selected language from combo box
+        if text is None:
+            text = self.main_window.ui.cbLanguage.currentText()
+
+        # Convert to Tesseract language code
+        tesseract_language = language_mapping.get(text, "eng")
+
+        # Store current language for OCR operations
+        self.current_language = tesseract_language
 
     @async_action
     def on_upload_clicked(self):
@@ -324,31 +389,21 @@ class ButtonActions:
             print(f"Error loading image to area: {e}")
             self._set_text_to_editor_safe(f"Lỗi khi tải ảnh: {str(e)}")
 
-    # Action handlers without @async_action (run in main thread)
-    def on_sentence_case_clicked(self):
-        """Action for Sentence Case button - Toggle (mutually exclusive)"""
-        self._toggle_case_format("sentence_case", self._create_sentence_case_format)
+    def get_current_language_info(self):
+        """Get information about current language and supported languages"""
+        current_ui_language = self.main_window.ui.cbLanguage.currentText()
+        language_mapping = {"En": "eng", "Vi": "vie", "Jp": "jpn"}
+        current_language = language_mapping.get(current_ui_language, "eng")
 
-    def on_lower_case_clicked(self):
-        """Action for Lower Case button - Toggle (mutually exclusive)"""
-        self._toggle_case_format("lowercase", self._create_lowercase_format)
+        language_names = {"eng": "English", "vie": "Vietnamese", "jpn": "Japanese"}
 
-    def on_upper_case_clicked(self):
-        """Action for Upper Case button - Toggle (mutually exclusive)"""
-        self._toggle_case_format("uppercase", self._create_uppercase_format)
-
-    def on_underline_clicked(self):
-        """Action for Underline button - Toggle (independent)"""
-        self._toggle_decorative_format(
-            "underline",
-            self._create_underline_format,
-            self._create_format_without_underline,
-        )
-
-    def on_strikethrough_clicked(self):
-        """Action for Strikethrough button - Toggle (independent)"""
-        self._toggle_decorative_format(
-            "strikethrough",
-            self._create_strikethrough_format,
-            self._create_format_without_strikethrough,
-        )
+        return {
+            "ui_language": current_ui_language,
+            "tesseract_language": current_language,
+            "language_name": language_names.get(current_language, "Unknown"),
+            "supported_languages": [
+                "English (eng)",
+                "Vietnamese (vie)",
+                "Japanese (jpn)",
+            ],
+        }

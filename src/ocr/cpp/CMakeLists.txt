@@ -1,9 +1,13 @@
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 cmake_minimum_required(VERSION 3.16)
 project(TextCaptureOCR)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Add cmake module path for FindTesseract.cmake
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Find required packages
 find_package(OpenCV REQUIRED)
@@ -18,22 +22,22 @@ include_directories(${Tesseract_INCLUDE_DIRS})
 set(SOURCES
     ocr_engine.cpp
     ocr_engine.h
-    ocr_engine.cpp
+    cpp_ocr.cpp
 )
 
 # Create shared library
 pybind11_add_module(cpp_ocr ${SOURCES})
 
-# Link libraries
-target_link_libraries(cpp_ocr 
+# Link libraries (pybind11 handles Python libraries automatically)
+target_link_libraries(cpp_ocr PRIVATE
     ${OpenCV_LIBS}
     ${Tesseract_LIBRARIES}
 )
 
 # Set output directory
 set_target_properties(cpp_ocr PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../..
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../..
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../Release
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../../Release
 )
 
 # Compiler specific settings
@@ -45,5 +49,5 @@ endif()
 
 # Installation
 install(TARGETS cpp_ocr
-    LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/../..
+    LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/../../Release
 ) 

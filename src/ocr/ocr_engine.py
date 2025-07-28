@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any
 from pathlib import Path
 
 try:
-    # Try to import C++ implementation first
+    # Try to import C++ implementation using the wrapper
     from .cpp_ocr import CppOCREngine
     CPP_AVAILABLE = True
 except ImportError:
@@ -36,7 +36,20 @@ class OCREngine:
         self.kwargs = kwargs
         
         if self.use_cpp:
-            self._engine = CppOCREngine(**kwargs)
+            # Set TESSDATA_PREFIX environment variable
+            tessdata_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Release", "tessdata")
+            if not os.path.exists(tessdata_path):
+                # Try vcpkg tessdata path
+                tessdata_path = "C:/Users/xuan2/vcpkg/installed/x64-windows/share/tessdata"
+            if os.path.exists(tessdata_path):
+                os.environ['TESSDATA_PREFIX'] = tessdata_path
+            
+            self._engine = CppOCREngine()
+            # Initialize with language if provided
+            if 'language' in kwargs:
+                self._engine.initialize(kwargs['language'])
+            else:
+                self._engine.initialize('eng')
             print("Using C++ OCR implementation")
         else:
             self._engine = PythonOCREngine(**kwargs)

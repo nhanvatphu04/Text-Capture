@@ -4,6 +4,12 @@ Supports both Python and C++ implementations
 """
 
 from .ocr_engine import OCREngine
-from .image_processor import ImageProcessor
+from .cpp_ocr import CppOCREngine, is_cpp_available, get_cpp_dependencies, get_cpp_version
 
-__all__ = ['OCREngine', 'ImageProcessor'] 
+__all__ = [
+    'OCREngine',
+    'CppOCREngine', 
+    'is_cpp_available',
+    'get_cpp_dependencies',
+    'get_cpp_version'
+] 

@@ -9,11 +9,21 @@ from typing import Dict, Any, Optional
 
 try:
     # Try to import C++ implementation
-    from .cpp.cpp_ocr import CppOCREngine as _CppOCREngine
+    from .cpp.cpp_ocr import OCREngine as _CppOCREngine
     CPP_AVAILABLE = True
 except ImportError:
-    CPP_AVAILABLE = False
-    _CppOCREngine = None
+    try:
+        # Try alternative import path for compiled module
+        import sys
+        import os
+        release_path = os.path.join(os.path.dirname(__file__), '..', 'Release')
+        if release_path not in sys.path:
+            sys.path.append(release_path)
+        from cpp_ocr import OCREngine as _CppOCREngine
+        CPP_AVAILABLE = True
+    except ImportError:
+        CPP_AVAILABLE = False
+        _CppOCREngine = None
 
 
 class CppOCREngine:
@@ -36,10 +46,39 @@ class CppOCREngine:
         
         self._engine = _CppOCREngine()
         self.language = kwargs.get('language', 'eng')
+    
+    def initialize(self, language: str = 'eng') -> bool:
+        """
+        Initialize the C++ OCR engine with specified language
+
+        Args:
+            language: Language code for OCR
+
+        Returns:
+            True if initialization successful, False otherwise
+        """
+        self.language = language
+        return self._engine.initialize(language)
+    
+    def enable_external_tokenizer(self, enable: bool = True, service_url: str = "http://localhost:5001") -> None:
+        """
+        Enable external Vietnamese tokenizer service
         
-        # Initialize the engine
-        if not self._engine.initialize(self.language):
-            raise RuntimeError(f"Failed to initialize C++ OCR engine with language: {self.language}")
+        Args:
+            enable: Whether to enable external tokenizer
+            service_url: URL of the tokenizer service
+        """
+        self._engine.set_tokenizer_service_url(service_url)
+        self._engine.enable_external_tokenizer(enable)
+    
+    def is_external_tokenizer_available(self) -> bool:
+        """
+        Check if external tokenizer service is available
+        
+        Returns:
+            True if service is available, False otherwise
+        """
+        return self._engine.is_external_tokenizer_available()
     
     def extract_text(self, image_path: str, **kwargs) -> str:
         """

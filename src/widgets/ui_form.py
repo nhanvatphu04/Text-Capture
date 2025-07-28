@@ -24,9 +24,9 @@ class Ui_Main(object):
         if not Main.objectName():
             Main.setObjectName(u"Main")
         Main.setWindowModality(Qt.WindowModality.ApplicationModal)
-        Main.resize(600, 400)
-        Main.setMinimumSize(QSize(600, 400))
-        Main.setMaximumSize(QSize(600, 400))
+        Main.resize(600, 420)
+        Main.setMinimumSize(QSize(600, 420))
+        Main.setMaximumSize(QSize(600, 420))
         Main.setAcceptDrops(True)
         icon = QIcon()
         icon.addFile(u":/src/resources/icons/app.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -102,6 +102,11 @@ class Ui_Main(object):
         self.cbLanguage.setObjectName(u"cbLanguage")
         self.cbLanguage.setGeometry(QRect(150, 345, 80, 24))
         self.cbLanguage.setMinimumSize(QSize(80, 24))
+        self.lbStatusBar = QLabel(Main)
+        self.lbStatusBar.setObjectName(u"lbStatusBar")
+        self.lbStatusBar.setGeometry(QRect(0, 390, 600, 32))
+        self.lbStatusBar.setFrameShape(QFrame.Shape.Box)
+        self.lbStatusBar.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.retranslateUi(Main)
 
@@ -154,5 +159,6 @@ class Ui_Main(object):
         self.cbLanguage.setToolTip(QCoreApplication.translate("Main", u"Ch\u1ecdn ng\u00f4n ng\u1eef", None))
 #endif // QT_CONFIG(tooltip)
         self.cbLanguage.setCurrentText("")
+        self.lbStatusBar.setText("")
     # retranslateUi
 

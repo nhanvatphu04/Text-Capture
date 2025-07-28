@@ -9,6 +9,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 import resources_rc
 """
 
-from .mainwindow.ui_form import Ui_Main
+from .ui_form import Ui_Main
 
 __all__ = ["Ui_Main"]

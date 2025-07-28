@@ -62,6 +62,7 @@ private:
     // Helper methods
     bool save_image(const cv::Mat& image, const std::string& output_path);
     std::string generate_temp_path(const std::string& original_path);
+    std::string post_process_text(const std::string& text);
 };
 
 } // namespace textcapture

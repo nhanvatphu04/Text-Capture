@@ -6,23 +6,18 @@ import sys
 import os
 
 # Add src directory to Python path
-sys.path.insert(
-    0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "src")
-)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "src"))
 
 from PySide6.QtWidgets import QWidget, QFileDialog
 from PySide6.QtGui import QPixmap
-from PySide6.QtCore import Qt, QCoreApplication
-from src.widgets.mainwindow.ui_form import Ui_Main
+from PySide6.QtCore import Qt, QCoreApplication, QTimer
+from src.widgets.ui_form import Ui_Main
 
 from src.core.button_manager import ButtonManager
 from src.actions.button_actions import ButtonActions
 from src.utils.css_manager import CSSManager, WidgetStateManager
 
 
-# Important:
-# You need to run the following command to generate the ui_form.py file
-#     pyside6-uic src/widgets/mainwindow/form.ui -o src/widgets/mainwindow/ui_form.py
 class MainWindow(QWidget):
     """Main application window"""
 
@@ -61,6 +56,33 @@ class MainWindow(QWidget):
         # Setup connections
         self._setup_button_connections()
 
+    def _gather_buttons(self):
+        """Gather all buttons from UI"""
+        buttons = [
+            self.ui.btnRefresh,
+            self.ui.btnGetText,
+            self.ui.cbLanguage,
+            self.ui.btnUpload,
+            self.ui.btnSentenceCase,
+            self.ui.btnLowerCase,
+            self.ui.btnUpperCase,
+            self.ui.btnUnderline,
+            self.ui.btnStrikethrough,
+        ]
+        return buttons
+
+    def _setup_button_connections(self):
+        """Set up connections for all buttons"""
+        self.ui.btnRefresh.clicked.connect(self.button_actions.on_refresh_clicked)
+        self.ui.btnGetText.clicked.connect(self.button_actions.on_get_text_clicked)
+        self.ui.cbLanguage.currentTextChanged.connect(self.button_actions.on_language_changed)
+        self.ui.btnUpload.clicked.connect(self.button_actions.on_upload_clicked)
+        self.ui.btnSentenceCase.clicked.connect(self.button_actions.on_sentence_case_clicked)
+        self.ui.btnLowerCase.clicked.connect(self.button_actions.on_lower_case_clicked)
+        self.ui.btnUpperCase.clicked.connect(self.button_actions.on_upper_case_clicked)
+        self.ui.btnUnderline.clicked.connect(self.button_actions.on_underline_clicked)
+        self.ui.btnStrikethrough.clicked.connect(self.button_actions.on_strikethrough_clicked)
+
     def _drag_enter_event(self, event):
         """Handle drag enter event"""
         if event.mimeData().hasUrls():
@@ -85,8 +107,8 @@ class MainWindow(QWidget):
                     self._load_image(file_path)
                     event.acceptProposedAction()
                 else:
-                    print(f"Invalid image file: {file_path}")
                     self.image_area_state.set_error_state(True)
+                    self.set_status_message(f"Tải ảnh thất bại: {file_path}", "error")
         else:
             event.ignore()
 
@@ -107,7 +129,6 @@ class MainWindow(QWidget):
         if not os.path.exists(file_path):
             return False
 
-        # Check file extension
         valid_extensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff", ".webp"]
         file_ext = os.path.splitext(file_path)[1].lower()
         return file_ext in valid_extensions
@@ -117,7 +138,7 @@ class MainWindow(QWidget):
         try:
             # Set loading state
             self.image_area_state.set_loading_state(True)
-            
+
             pixmap = QPixmap(image_path)
             if not pixmap.isNull():
                 # Scale pixmap to fit the label while maintaining aspect ratio
@@ -128,24 +149,22 @@ class MainWindow(QWidget):
                 )
                 self.ui.lbImageArea.setPixmap(scaled_pixmap)
                 self.ui.lbImageArea.image_path = image_path
-                
+
                 # Set success state briefly
                 self.image_area_state.set_loading_state(False)
                 self.image_area_state.set_success_state(True)
-                
-                print(f"Image loaded successfully: {image_path}")
-                
+                self.set_status_message("Tải ảnh thành công!", "success")
+
                 # Clear success state after 2 seconds
-                from PySide6.QtCore import QTimer
                 QTimer.singleShot(2000, lambda: self.image_area_state.set_success_state(False))
             else:
-                print(f"Failed to load image: {image_path}")
                 self.image_area_state.set_loading_state(False)
                 self.image_area_state.set_error_state(True)
+                self.set_status_message(f"Tải ảnh thất bại: {image_path}", "error")
         except Exception as e:
-            print(f"Error loading image: {e}")
             self.image_area_state.set_loading_state(False)
             self.image_area_state.set_error_state(True)
+            self.set_status_message(f"Lỗi khi tải ảnh: {e}", "error")
 
     def _clear_image_impl(self):
         """Clear the image and reset to default state"""
@@ -162,40 +181,9 @@ class MainWindow(QWidget):
             )
         )
         self.ui.lbImageArea.image_path = None
-        
+
         # Reset all states
         self.image_area_state.reset_to_default()
-
-    def _gather_buttons(self):
-        """Gather all buttons from UI"""
-        buttons = [
-            self.ui.btnRefresh,
-            self.ui.btnGetText,
-            self.ui.cbLanguage,
-            self.ui.btnUpload,
-            self.ui.btnSentenceCase,
-            self.ui.btnLowerCase,
-            self.ui.btnUpperCase,
-            self.ui.btnUnderline,
-            self.ui.btnStrikethrough,
-        ]
-        return buttons
-
-    def _setup_button_connections(self):
-        """Set up connections for all buttons"""
-        self.ui.btnRefresh.clicked.connect(self.button_actions.on_refresh_clicked)
-        self.ui.btnGetText.clicked.connect(self.button_actions.on_get_text_clicked)
-        self.ui.cbLanguage.currentTextChanged.connect(self.button_actions.on_language_changed)
-        self.ui.btnUpload.clicked.connect(self.button_actions.on_upload_clicked)
-        self.ui.btnSentenceCase.clicked.connect(
-            self.button_actions.on_sentence_case_clicked
-        )
-        self.ui.btnLowerCase.clicked.connect(self.button_actions.on_lower_case_clicked)
-        self.ui.btnUpperCase.clicked.connect(self.button_actions.on_upper_case_clicked)
-        self.ui.btnUnderline.clicked.connect(self.button_actions.on_underline_clicked)
-        self.ui.btnStrikethrough.clicked.connect(
-            self.button_actions.on_strikethrough_clicked
-        )
 
     def _set_text_to_editor(self, text):
         """Thread-safe method to set text in the editor"""
@@ -215,8 +203,9 @@ class MainWindow(QWidget):
 
     def set_status_message(self, message, status_type="info"):
         """Set status message with appropriate styling"""
-        # You can add a status label to your UI and use this method
-        # For now, we'll just print the message
+        if hasattr(self.ui, "lbStatusBar"):
+            self.ui.lbStatusBar.setText(message)
+            QTimer.singleShot(2000, lambda: self.ui.lbStatusBar.setText(""))
         print(f"[{status_type.upper()}] {message}")
 
     def get_image_area_state(self):
@@ -246,7 +235,7 @@ class MainWindow(QWidget):
                 )
             )
             self.ui.lbImageArea.image_path = None
-            
+
             # Reset CSS properties
             self.image_area_state.reset_to_default()
 
@@ -262,7 +251,7 @@ class MainWindow(QWidget):
 
                 # Set loading state
                 self.image_area_state.set_loading_state(True)
-                
+
                 pixmap = QPixmap(image_path)
                 if not pixmap.isNull():
                     # Scale pixmap to fit the label while maintaining aspect ratio
@@ -273,22 +262,20 @@ class MainWindow(QWidget):
                     )
                     self.ui.lbImageArea.setPixmap(scaled_pixmap)
                     self.ui.lbImageArea.image_path = image_path
-                    
+
                     # Set success state briefly
                     self.image_area_state.set_loading_state(False)
                     self.image_area_state.set_success_state(True)
-                    
-                    print(f"Image loaded successfully: {image_path}")
-                    
-                    # Clear success state after 2 seconds
-                    from PySide6.QtCore import QTimer
-                    QTimer.singleShot(2000, lambda: self.image_area_state.set_success_state(False))
+
+                    QTimer.singleShot(
+                        2000, lambda: self.image_area_state.set_success_state(False)
+                    )
                 else:
-                    print(f"Failed to load image: {image_path}")
+                    self.set_status_message(f"Tải ảnh thất bại: {image_path}", "error")
                     self.image_area_state.set_loading_state(False)
                     self.image_area_state.set_error_state(True)
             except Exception as e:
-                print(f"Error loading image: {e}")
+                self.set_status_message(f"Lỗi khi tải ảnh: {e}", "error")
                 self.image_area_state.set_loading_state(False)
                 self.image_area_state.set_error_state(True)
 
@@ -317,13 +304,13 @@ class MainWindow(QWidget):
                 elif action == file_action:
                     self._handle_file_selection()
                 elif action == cancel_action:
-                    print("Upload cancelled")
+                    self.set_status_message("Hủy tải ảnh", "info")
             else:
                 # Fallback: show file dialog directly
                 self._handle_file_selection()
 
         except Exception as e:
-            print(f"Error showing upload menu: {e}")
+            self.set_status_message(f"Lỗi khi hiển thị menu tải ảnh: {e}", "error")
             # Fallback: show file dialog directly
             self._handle_file_selection()
 
@@ -332,12 +319,9 @@ class MainWindow(QWidget):
         try:
             # TODO: Implement camera capture
             # For now, show a message
-            self.ui.txtEdit.setPlainText(
-                "Chức năng chụp ảnh từ camera đang được phát triển..."
-            )
+            self.set_status_message("Chức năng chụp ảnh từ camera đang được phát triển...", "info")
         except Exception as e:
-            print(f"Error capturing from camera: {e}")
-            self.ui.txtEdit.setPlainText(f"Lỗi khi mở camera: {str(e)}")
+            self.set_status_message(f"Lỗi khi chụp ảnh từ camera: {e}", "error")
 
     def _handle_file_selection(self):
         """Handle file selection"""
@@ -356,11 +340,10 @@ class MainWindow(QWidget):
                 # Load the selected image into the image area
                 self._load_image_to_area(file_path)
             else:
-                print("No file selected")
+                self.set_status_message("Không có ảnh được chọn", "info")
 
         except Exception as e:
-            print(f"Error selecting from device: {e}")
-            self.ui.txtEdit.setPlainText(f"Lỗi khi chọn ảnh: {str(e)}")
+            self.set_status_message(f"Lỗi khi chọn ảnh: {e}", "error")
 
     def disable_other_buttons(self, active_button):
         """Delegate to button manager"""

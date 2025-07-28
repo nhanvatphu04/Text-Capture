@@ -70,14 +70,17 @@ def safe_ui_update(main_window, method_name, *args, **kwargs):
     """Safely update UI elements from a background thread using signal/slot"""
     if not hasattr(main_window, "ui_update_signal"):
         main_window.ui_update_signal = UIUpdateSignal()
-        main_window.ui_update_signal.update_text.connect(
-            main_window._set_text_to_editor
-        )
+        main_window.ui_update_signal.update_text.connect(main_window._set_text_to_editor)
         main_window.ui_update_signal.clear_image.connect(main_window._clear_image_safe)
         main_window.ui_update_signal.load_image.connect(main_window._load_image_to_area)
         main_window.ui_update_signal.show_upload_menu.connect(main_window._show_upload_menu)
 
-    if method_name == "_set_text_to_editor" and args:
+    if method_name == "set_status_message" and args:
+        # args[0]: message, args[1] (optional): status_type
+        message = args[0]
+        status_type = args[1] if len(args) > 1 else "info"
+        main_window.set_status_message(message, status_type)
+    elif method_name == "_set_text_to_editor" and args:
         main_window.ui_update_signal.update_text.emit(args[0])
     elif method_name == "_clear_image" or method_name == "_clear_image_safe":
         main_window.ui_update_signal.clear_image.emit()
