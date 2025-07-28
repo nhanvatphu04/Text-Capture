@@ -229,9 +229,11 @@ def build_cpp_module():
     try:
         # Configure with CMake
         print("Configuring with CMake...")
+        cmake_toolchain = '-DCMAKE_TOOLCHAIN_FILE=C:/Users/xuan2/vcpkg/scripts/buildsystems/vcpkg.cmake'
         cmake_cmd = [
             'cmake', '..',
-            '-DCMAKE_BUILD_TYPE=Release'
+            '-DCMAKE_BUILD_TYPE=Release',
+            cmake_toolchain
         ]
         
         if platform.system() == "Windows":
@@ -275,24 +277,32 @@ def build_cpp_module():
         
         result = subprocess.run(build_cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"✗ Build failed: {result.stderr}")
+            print(f"✗ Build failed!")
+            print("stdout:\n", result.stdout)
+            print("stderr:\n", result.stderr)
             return False
         
         print("✓ Build successful")
         
         # Check if the module was created
-        module_path = current_dir / "cpp_ocr"
         if platform.system() == "Windows":
-            module_path = module_path.with_suffix('.pyd')
+            output_dir = current_dir / "src" / "Release" / "Release"
+            pyd_files = list(output_dir.glob("*.pyd"))
+            if pyd_files:
+                print(f"✓ C++ module created: {pyd_files[0]}")
+                return True
+            else:
+                print(f"✗ C++ module not found in: {output_dir}")
+                return False
         else:
-            module_path = module_path.with_suffix('.so')
-        
-        if module_path.exists():
-            print(f"✓ C++ module created: {module_path}")
-            return True
-        else:
-            print(f"✗ C++ module not found at: {module_path}")
-            return False
+            module_path = current_dir / "src" / "Release" / "Release"
+            so_files = list(module_path.glob("*.so"))
+            if so_files:
+                print(f"✓ C++ module created: {so_files[0]}")
+                return True
+            else:
+                print(f"✗ C++ module not found in: {module_path}")
+                return False
     
     finally:
         # Restore original directory

@@ -35,6 +35,50 @@ pip install -r requirements.txt
 2. **CMake**: Tải từ https://cmake.org/download/
 3. **OpenCV**: Tải từ https://opencv.org/releases/
 4. **Tesseract**: Tải từ https://github.com/UB-Mannheim/tesseract/wiki
+5. **vcpkg** (quản lý thư viện C++):
+   - Clone vcpkg:
+     ```bash
+     git clone https://github.com/microsoft/vcpkg.git
+     cd vcpkg
+     .\bootstrap-vcpkg.bat
+     ```
+   - Thêm vcpkg vào PATH hoặc dùng đường dẫn đầy đủ tới vcpkg.exe
+   - Cài pybind11 qua vcpkg:
+     ```bash
+     .\vcpkg.exe install pybind11:x64-windows
+     ```
+   - (Khuyến nghị) Cài tesseract qua vcpkg để có đủ file .lib:
+     ```bash
+     .\vcpkg.exe install tesseract:x64-windows
+     ```
+
+#### Build C++ Module thủ công với vcpkg
+
+1. **Xóa thư mục build cũ (nếu có):**
+   - Xóa thư mục `src/ocr/cpp/build/` và `src/Release/Release/` nếu muốn build sạch.
+2. **Tạo thư mục build và chuyển vào đó:**
+   ```bash
+   cd src/ocr/cpp
+   mkdir build
+   cd build
+   ```
+3. **Cấu hình CMake với toolchain của vcpkg:**
+   ```bash
+   cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/Users/<user>/vcpkg/scripts/buildsystems/vcpkg.cmake
+   ```
+   *(Thay đường dẫn cho đúng với máy của bạn)*
+4. **Build module:**
+   ```bash
+   cmake --build . --config Release
+   ```
+5. **Kết quả:**
+   - File `.pyd` (module Python) sẽ nằm trong `src/Release/Release/`
+   - Các file `.lib`, `.exp` sẽ nằm trong `src/ocr/cpp/build/Release/`
+   - Các file `.dll` phụ thuộc (OpenCV, Tesseract, v.v.) cần copy vào cùng thư mục `.pyd` nếu chạy thử ngoài IDE.
+
+#### Giải thích các thư mục output
+- `src/Release/Release/`: Chứa file module Python `.pyd` để import từ Python.
+- `src/ocr/cpp/build/Release/`: Chứa file thư viện `.lib`, `.exp` và các file build trung gian.
 
 #### Linux (Ubuntu/Debian)
 ```bash
@@ -57,141 +101,17 @@ brew install tesseract
 python build_cpp.py
 ```
 
-## Sử dụng
-
-### Cơ bản
-
-```python
-from src.ocr import OCREngine
-
-# Khởi tạo OCR engine (tự động chọn C++ hoặc Python)
-ocr = OCREngine(use_cpp=True, language='vie')
-
-# Trích xuất văn bản
-text = ocr.extract_text('path/to/image.jpg')
-print(text)
-```
-
-### Nâng cao
-
-```python
-from src.ocr import OCREngine, ImageProcessor
-
-# Khởi tạo image processor
-processor = ImageProcessor()
-
-# Preprocess ảnh
-processed_path = processor.preprocess_image(
-    'path/to/image.jpg',
-    enhance_contrast=True,
-    enhance_sharpness=True,
-    denoise=True,
-    deskew=True
-)
-
-# OCR với confidence scores
-ocr = OCREngine(use_cpp=True, language='vie')
-result = ocr.extract_text_with_confidence(processed_path)
-
-print(f"Text: {result['text']}")
-print(f"Confidence: {result['confidence']:.2f}")
-```
-
-### Kiểm tra implementation
-
-```python
-from src.ocr import OCREngine
-
-ocr = OCREngine(use_cpp=True)
-info = ocr.get_implementation_info()
-
-print(f"Using C++: {info['using_cpp']}")
-print(f"C++ Available: {info['cpp_available']}")
-print(f"Engine Type: {info['engine_type']}")
-```
-
-## Cấu trúc thư mục
-
-```
-src/ocr/
-├── __init__.py              # Module entry point
-├── ocr_engine.py            # Main OCR engine interface
-├── python_ocr.py            # Python implementation
-├── cpp_ocr.py               # C++ wrapper
-├── image_processor.py       # Image preprocessing
-├── cpp/                     # C++ source code
-│   ├── CMakeLists.txt       # CMake configuration
-│   ├── ocr_engine.h         # C++ header
-│   ├── ocr_engine.cpp       # C++ implementation
-│   └── cpp_ocr.cpp          # Python bindings
-└── README.md                # This file
-```
-
-## API Reference
-
-### OCREngine
-
-#### Constructor
-```python
-OCREngine(use_cpp=True, language='eng', **kwargs)
-```
-
-#### Methods
-- `extract_text(image_path, **kwargs) -> str`
-- `extract_text_with_confidence(image_path, **kwargs) -> dict`
-- `preprocess_image(image_path, **kwargs) -> str`
-- `set_language(language)`
-- `get_supported_languages() -> list`
-- `get_implementation_info() -> dict`
-
-### ImageProcessor
-
-#### Constructor
-```python
-ImageProcessor(use_opencv=True, use_pil=True, **kwargs)
-```
-
-#### Methods
-- `preprocess_image(image_path, **kwargs) -> str`
-- `get_available_methods() -> dict`
-- `get_default_settings() -> dict`
-
-## Preprocessing Options
-
-### Cơ bản
-- `enhance_contrast`: Tăng độ tương phản
-- `enhance_sharpness`: Làm sắc nét
-- `denoise`: Khử nhiễu
-- `grayscale`: Chuyển đen trắng
-
-### Nâng cao
-- `deskew`: Tự động căn chỉnh
-- `remove_noise`: Loại bỏ nhiễu
-- `binarize`: Chuyển nhị phân
-- `resize`: Thay đổi kích thước
-- `resize_factor`: Hệ số thay đổi kích thước
-
-## Ngôn ngữ hỗ trợ
-
-### Cơ bản
-- `eng`: Tiếng Anh
-- `vie`: Tiếng Việt
-- `chi_sim`: Tiếng Trung giản thể
-- `chi_tra`: Tiếng Trung phồn thể
-
-### Mở rộng
-- `jpn`: Tiếng Nhật
-- `kor`: Tiếng Hàn
-- `tha`: Tiếng Thái
-- `ara`: Tiếng Ả Rập
-- `hin`: Tiếng Hindi
-
 ## Troubleshooting
 
-### C++ Module không build được
+### C++ Module không build được hoặc script báo không tìm thấy file .pyd
 1. Kiểm tra dependencies: `python build_cpp.py`
-2. Đảm bảo CMake và compiler đã cài đặt
-3. Kiểm tra đường dẫn OpenCV và Tesseract
+2. Đảm bảo CMake, compiler, pybind11, OpenCV, Tesseract đã cài đặt đúng (ưu tiên cài qua vcpkg).
+3. Kiểm tra đường dẫn toolchain vcpkg khi chạy CMake:
+   - Đảm bảo lệnh CMake có tham số `-DCMAKE_TOOLCHAIN_FILE=.../vcpkg.cmake`.
+4. Kiểm tra vị trí file output `.pyd`:
+   - File `.pyd` sẽ nằm trong `src/Release/Release/` (không phải thư mục gốc project).
+   - Nếu script báo không tìm thấy file `.pyd`, hãy sửa lại đường dẫn kiểm tra file output trong `build_cpp.py` cho đúng vị trí thực tế.
+5. Nếu build thủ công thành công nhưng script vẫn báo lỗi, hãy kiểm tra lại logic kiểm tra file output trong script.
 
 ### OCR không nhận dạng được
 1. Thử preprocessing ảnh trước

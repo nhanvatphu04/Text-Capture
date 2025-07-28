@@ -264,6 +264,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+CMakeScripts/
 
 # Build directories
 build/
@@ -272,6 +273,8 @@ Debug/
 Release/
 x64/
 x86/
+bin/
+lib/
 
 # C++ Module specific (src/ocr/cpp/)
 src/ocr/cpp/build/
@@ -287,6 +290,8 @@ src/ocr/cpp/ALL_BUILD.vcxproj*
 src/ocr/cpp/ZERO_CHECK.vcxproj*
 src/ocr/cpp/cpp_ocr.dir/
 src/ocr/cpp/x64/
+src/ocr/cpp/bin/
+src/ocr/cpp/lib/
 
 # C++ compiled files
 *.pyd
@@ -298,6 +303,11 @@ src/ocr/cpp/x64/
 *.so.1
 *.so.2
 *.so.3
+*.dll
+*.exe
+*.a
+*.o
+*.obj
 
 # OpenCV
 opencv_*
@@ -313,27 +323,46 @@ tessdata/
 temp_ocr_*
 preprocessed_*
 *.preprocessed.*
+ocr_temp_*
+debug_ocr_*
 
 # Project specific
 # ----------------
 # Generated resource files
 resources_rc.py
 *.qrc.bak
+qrc_*.cpp
+moc_*.cpp
+ui_*.h
 
 # Log files
 *.log
 logs/
+debug.log
+error.log
 
 # Configuration files with sensitive data
 config.ini
 settings.json
 .env.local
+.env.production
+.env.development
 
 # Temporary files
 temp/
 tmp/
 *.tmp
 *.temp
+*.bak
+*.swp
+*.swo
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.idea/workspace.xml
+.idea/tasks.xml
 
 # OS specific
 # -----------
@@ -341,12 +370,21 @@ tmp/
 *.lnk
 desktop.ini
 $RECYCLE.BIN/
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # macOS
 .AppleDouble
 .LSOverride
 Icon
 ._*
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 
 # Linux
 *~
@@ -354,3 +392,15 @@ Icon
 .directory
 .Trash-*
 .nfs*
+.dmrc
+.Trash-*
+.nfs*
+
+# Cross-platform
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

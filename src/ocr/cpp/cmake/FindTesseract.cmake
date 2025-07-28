@@ -60,4 +60,11 @@ if(Tesseract_FOUND)
 endif()
 
 # Mark as advanced
-mark_as_advanced(Tesseract_INCLUDE_DIR Tesseract_LIBRARY) 
+mark_as_advanced(Tesseract_INCLUDE_DIR Tesseract_LIBRARY)
+
+message(STATUS "Tesseract_FOUND: ${Tesseract_FOUND}")
+message(STATUS "Tesseract_INCLUDE_DIR: ${Tesseract_INCLUDE_DIR}")
+message(STATUS "Tesseract_LIBRARY: ${Tesseract_LIBRARY}")
+message(STATUS "Tesseract_LIBRARIES: ${Tesseract_LIBRARIES}")
+message(STATUS "Tesseract_INCLUDE_DIRS: ${Tesseract_INCLUDE_DIRS}")
+message(STATUS "Tesseract_VERSION: ${Tesseract_VERSION}")
