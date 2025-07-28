@@ -65,24 +65,23 @@ std::string OCREngine::extract_text(const std::string& image_path) {
         cv::Mat preprocessed = image.clone();
         preprocessed = convert_to_grayscale(preprocessed);
         
-        // Enhance contrast for better text separation
-        cv::Mat enhanced = enhance_contrast(preprocessed);
-        
-        // Apply morphological operations to separate connected characters
-        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1));
-        cv::Mat eroded;
-        cv::erode(enhanced, eroded, kernel, cv::Point(-1, -1), 1);
-        
-        // Use Otsu thresholding for better separation
-        cv::Mat binary;
-        cv::threshold(eroded, binary, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-        
-        // Apply additional morphological operations to improve word separation
-        cv::Mat kernel2 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 1));
-        cv::Mat dilated;
-        cv::dilate(binary, dilated, kernel2, cv::Point(-1, -1), 1);
-        
-        preprocessed = dilated;
+        if (current_language_ == "jpn") {
+            // Simplify pipeline for Japanese: only grayscale + Otsu threshold
+            cv::threshold(preprocessed, preprocessed, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
+            std::cout << "[JPN] Simple grayscale + Otsu threshold pipeline applied" << std::endl;
+        } else {
+            // Old pipeline for other languages
+            cv::Mat enhanced = enhance_contrast(preprocessed);
+            cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1));
+            cv::Mat eroded;
+            cv::erode(enhanced, eroded, kernel, cv::Point(-1, -1), 1);
+            cv::Mat binary;
+            cv::threshold(eroded, binary, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
+            cv::Mat kernel2 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 1));
+            cv::Mat dilated;
+            cv::dilate(binary, dilated, kernel2, cv::Point(-1, -1), 1);
+            preprocessed = dilated;
+        }
         
         std::cout << "Image preprocessed successfully with adaptive thresholding" << std::endl;
         

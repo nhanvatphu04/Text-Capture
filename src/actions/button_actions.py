@@ -284,6 +284,25 @@ class ButtonActions:
         selected_language_tesseract = tesseract_mapping.get(current_ui_language, "eng")
         selected_language_easyocr = easyocr_mapping.get(current_ui_language, "en")
 
+        # Nếu là tiếng Nhật, ép dùng EasyOCR (Python)
+        if selected_language_tesseract == "jpn":
+            try:
+                print("Forcing EasyOCR for Japanese...")
+                ocr_engine = OCREngine(use_cpp=False, language=selected_language_easyocr)
+                extracted_text = ocr_engine.extract_text(image_path)
+                if extracted_text and extracted_text.strip():
+                    print("EasyOCR (Python) successful for Japanese")
+                    self._set_text_to_editor_safe(extracted_text)
+                    return
+                else:
+                    print("EasyOCR (Python) returned empty text for Japanese")
+                    self._set_text_to_editor_safe("❌ Không thể nhận dạng văn bản tiếng Nhật từ ảnh này.\n\n💡 Gợi ý:\n- Kiểm tra chất lượng ảnh\n- Đảm bảo ảnh có text rõ ràng\n- Thử với ảnh khác")
+                    return
+            except Exception as e:
+                print(f"EasyOCR (Python) failed for Japanese: {e}")
+                self._set_text_to_editor_safe(f"❌ EasyOCR lỗi: {str(e)}")
+                return
+
         # Try C++ implementation first, then fallback to Python
         extracted_text = None
         error_message = None
