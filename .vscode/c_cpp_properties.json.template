@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:OPENCV_DIR}/include",
+                "${env:VCPKG_ROOT}/installed/x64-windows/include",
+                "${env:PYTHON_PATH}/Lib/site-packages/pybind11/include",
+                "${env:PYTHON_PATH}/Include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.26100.0",
+            "compilerPath": "${env:MSVC_PATH}/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+} 

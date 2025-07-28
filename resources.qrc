@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Compile: pyside6-rcc resources.qrc -o src/resources_rc.py-->
+
+        <!-- Stylesheets -->
+        <file>src/resources/styles/style.qss</file>
+        
+        <!-- Icons -->
+        <file>src/resources/icons/app.png</file>
+        
+        <!-- Images -->
+        <file>src/resources/images/add_image.png</file>
+        <file>src/resources/images/aim.png</file>
+        <file>src/resources/images/lettercase.png</file>
+        <file>src/resources/images/lower.png</file>
+        <file>src/resources/images/strikethrough.png</file>
+        <file>src/resources/images/underline.png</file>
+        <file>src/resources/images/upper.png</file>
+        
+        <!-- Fonts -->
+        <file>src/resources/fonts/JetBrainsMono-Bold.ttf</file>
+        <file>src/resources/fonts/JetBrainsMono-Italic.ttf</file>
+        <file>src/resources/fonts/JetBrainsMono-Light.ttf</file>
+        <file>src/resources/fonts/JetBrainsMono-Medium.ttf</file>
+        <file>src/resources/fonts/JetBrainsMono-Regular.ttf</file>
+    </qresource>
+</RCC>
